@@ -25,8 +25,8 @@ torch.manual_seed(100)
 
 # ====================================== HYPERPARAMETERS ======================================
 
-batch_size = 32
-block_size = 512
+batch_size = 16
+block_size = 256
 n_embedding = 512
 n_blocks = 12
 n_head = 8
