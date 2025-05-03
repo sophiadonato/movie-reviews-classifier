@@ -97,21 +97,48 @@ labels = dataSet['scoreSentiment'].tolist()
 
 tokenizer = ByteLevelBPETokenizer()
 tokenizer.train([file_path])
+
+# Add a special token <PAD> to the tokenizer vocabulary
+tokenizer.add_special_tokens(["<PAD>"])
+pad_token_id = tokenizer.token_to_id("<PAD>")
+
 # Convert a review to a list of integers
 encode = lambda s: tokenizer.encode(s).ids
+
 # Convert a list of integers to a review
 decode = lambda l: tokenizer.decode(l)
 
 # Encoding of reviews and labels
-encoded_reviews = [torch.tensor(encode(review)).to(device) for review in reviews]
-encoded_labels = torch.tensor(labels).to(device)
+# During encoding,  each sequence is converted into a torch.LongTenser in order to be used by the model which only accepts torch tensors
+encoded_reviews = [torch.tensor(encode(review), dtype=torch.long).to(device) for review in reviews]
+encoded_labels = torch.tensor(labels, dtype=torch.long).to(device)
+
+# Padding function
+def pad_sequences(sequences, max_length, pad_token_id):
+    padded_sequences = []
+    for seq in sequences:
+        if len(seq) < max_length:
+            # Padding if the sequence is too short
+            # dtype=torch.long is used to ensure that the padding token is of the same type as the input sequences
+            seq = torch.cat([seq, torch.full((max_length - len(seq),), pad_token_id, device=device, dtype=torch.long)])
+        else:
+            # Truncating if the sequence is too long
+            seq = seq[:max_length]
+        padded_sequences.append(seq)
+    return torch.stack(padded_sequences)
 
 # TRAIN AND TEST SETS SPLIT 
 
 n = int(0.9 * len(reviews))
-train_reviews = encoded_reviews[:n]
+
+# Define the maximum length for padding
+max_length = max(len(seq) for seq in encoded_reviews)
+
+# Apply padding to the sequences
+train_reviews = pad_sequences(encoded_reviews[:n], max_length, pad_token_id)
+test_reviews = pad_sequences(encoded_reviews[n:], max_length, pad_token_id)
+
 train_labels = encoded_labels[:n]
-test_reviews = encoded_reviews[n:]
 test_labels = encoded_labels[n:]
 
 # DATA LOADER
@@ -143,6 +170,8 @@ class Head(nn.Module):
         H = k.shape[-1]
 
         # compute attention scores (affinities)
+        # attention scores are the measure of how much focus each token should have on other tokens in the sequence
+        # attention scores are computed by taking the dot product of the query and key vectors
         wei = q @ k.transpose(-1, -2) * H**-0.5 # (B, T, H) @ (B, H, T) -> (B, T, T)
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf")) # (B, T, T)
         wei = F.softmax(wei, dim=-1) # (B, T, T)
@@ -243,12 +272,18 @@ optimizer = torch.optim.AdamW(lm.parameters(), lr=learning_rate)
 for i in range(max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
-        lm.eval()
         with torch.no_grad():
-            train_loss = classification_loss(lm, torch.stack(train_reviews), train_labels)
-            val_loss = classification_loss(lm, torch.stack(test_reviews), test_labels)
-        print(f"Step {i}: Train Loss: {train_loss:.4f}, Test Loss: {val_loss:.4f}")
-        wandb.log({"train_loss": train_loss.item(), "test_loss": val_loss.item()})
+            train_loss = classification_loss(lm, train_reviews, train_labels)
+            val_loss = classification_loss(lm, test_reviews, test_labels)
+
+        print(f"Step {i}: Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+        
+        wandb.log({
+            "step": i,
+            "train_loss": train_loss.item(),
+            "validation_loss": val_loss.item()
+        })
+
         lm.train()
 
     # Training
