@@ -27,9 +27,9 @@ torch.manual_seed(100)
 
 batch_size = 16
 block_size = 256
-n_embedding = 512
-n_blocks = 12
-n_head = 8
+n_embedding = 256
+n_blocks = 6
+n_head = 4
 dropout = 0.2
 max_iters = 50000
 learning_rate = 3e-4
