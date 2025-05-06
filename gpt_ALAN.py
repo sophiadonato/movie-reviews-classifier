@@ -116,7 +116,6 @@ labels = dataSet['scoreSentiment'].tolist()
 
 tokenizer = ByteLevelBPETokenizer()
 tokenizer.train([file_path])
-vocab_size = tokenizer.get_vocab_size()
 
 # Add a special token <PAD> to the tokenizer vocabulary
 tokenizer.add_special_tokens(["<PAD>"])
@@ -270,7 +269,7 @@ class GPTSentimentAnalysisModel(nn.Module):
     def __init__(self):
         super().__init__()
         # token embedding table converts token indices to embeddings
-        self.token_embedding_table = nn.Embedding(vocab_size, n_embedding)
+        self.token_embedding_table = nn.Embedding(len(tokenizer.get_vocab()), n_embedding)
         # position embedding table converts position indices to embeddings
         self.position_embedding_table = nn.Embedding(block_size, n_embedding)
         # stack of transformer blocks to process the input
