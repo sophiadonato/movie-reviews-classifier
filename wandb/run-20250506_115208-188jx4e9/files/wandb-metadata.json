@@ -1,0 +1,31 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-05-06T09:52:08.789898Z",
+  "program": "C:\\Users\\lvilo\\OneDrive - Universite de Liege\\Documents\\Cours\\Master 1\\Deep learning\\projet_tomate_pourrie\\CNN.py",
+  "codePath": "CNN.py",
+  "git": {
+    "remote": "git@gitlab.uliege.be:apprentissageprofond/projet_tomate_pourrie.git",
+    "commit": "be348e0f21b38c94b9234af31623c0a0c04fd092"
+  },
+  "email": "lvilour@student.uliege.be",
+  "root": "C:\\Users\\lvilo\\OneDrive - Universite de Liege\\Documents\\Cours\\Master 1\\Deep learning\\projet_tomate_pourrie",
+  "host": "DESKTOP-ICR5PVA",
+  "executable": "C:\\Users\\lvilo\\miniconda3\\envs\\deep_learning\\python.exe",
+  "codePathLocal": "CNN.py",
+  "cpu_count": 4,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "1022706577408",
+      "used": "892639588352"
+    }
+  },
+  "memory": {
+    "total": "16801923072"
+  },
+  "cpu": {
+    "count": 4,
+    "countLogical": 8
+  }
+}
