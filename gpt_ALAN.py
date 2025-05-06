@@ -16,6 +16,10 @@ from nltk.corpus import stopwords
 import nltk
 # Library os imported to handle file and directory operations
 import os
+# For the tokenization
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from torch.utils.data import DataLoader, TensorDataset
 
 print("Imports done")
 
@@ -40,6 +44,8 @@ learning_rate = 3e-4
 eval_every = 500
 eval_iters = 200
 save_every = 10000
+num_words = 10000
+max_seq_len = 256
 
 print("Hyperparameters done")
 
@@ -114,25 +120,25 @@ labels = dataSet['scoreSentiment'].tolist()
 
 # TOKENIZATION 
 
-tokenizer = ByteLevelBPETokenizer()
-tokenizer.train([file_path])
+# Convert the reviews and labels to numpy arrays for easier manipulation
+X = dataSet["reviewText"].to_numpy()
+y = dataSet["scoreSentiment"].to_numpy()
 
-# Add a special token <PAD> to the tokenizer vocabulary
-tokenizer.add_special_tokens(["<PAD>"])
-pad_token_id = tokenizer.token_to_id("<PAD>")
+# Initialize the tokenizer and fit it on the reviews
+tokenizer = Tokenizer(num_words=num_words, oov_token="<UNK>")  # <UNK> is the out-of-vocabulary token
+tokenizer.fit_on_texts(X)
 
-# Convert a review to a list of integers
-encode = lambda s: tokenizer.encode(s).ids
+# Convert the reviews to sequences of integers
+X_sequences = tokenizer.texts_to_sequences(X)
 
-# Convert a list of integers to a review
-decode = lambda l: tokenizer.decode(l)
+# Define the padding token ID
+X_padded = pad_sequences(X_sequences, padding='post', maxlen=max_seq_len)
 
-# Encoding of reviews and labels
-# During encoding,  each sequence is converted into a torch.LongTenser in order to be used by the model which only accepts torch tensors
-encoded_reviews = [torch.tensor(encode(review), dtype=torch.long).to(device) for review in reviews]
-encoded_labels = torch.tensor(labels, dtype=torch.long).to(device)
+# Convert the padded sequences to PyTorch tensors
+encoded_reviews = torch.tensor(X_padded, dtype=torch.long).to(device)
+encoded_labels = torch.tensor(y, dtype=torch.long).to(device)
 
-print("Tokenization done")
+print("Tokenization and padding done")
 
 # Padding function
 def pad_sequences(sequences, max_length, pad_token_id):
@@ -150,18 +156,23 @@ def pad_sequences(sequences, max_length, pad_token_id):
 
 # TRAIN AND TEST SETS SPLIT 
 
-n = int(0.9 * len(reviews))
+n = int(0.9 * len(encoded_reviews))
 
 # Define the maximum length for padding
 # Limit the maximum length of the sequences to a fixed size (block_size) for training
 max_length = min(block_size, max(len(seq) for seq in encoded_reviews))
 
-# Apply padding to the sequences
-train_reviews = pad_sequences(encoded_reviews[:n], max_length, pad_token_id)
-test_reviews = pad_sequences(encoded_reviews[n:], max_length, pad_token_id)
+train_reviews = encoded_reviews[:n]
+test_reviews = encoded_reviews[n:]
 
 train_labels = encoded_labels[:n]
 test_labels = encoded_labels[n:]
+
+train_dataset = TensorDataset(train_reviews, train_labels)
+validation_dataset = TensorDataset(test_reviews, test_labels)
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
 print("Train and test sets split")
 
@@ -269,7 +280,7 @@ class GPTSentimentAnalysisModel(nn.Module):
     def __init__(self):
         super().__init__()
         # token embedding table converts token indices to embeddings
-        self.token_embedding_table = nn.Embedding(len(tokenizer.get_vocab()), n_embedding)
+        self.token_embedding_table = nn.Embedding(num_words, n_embedding)
         # position embedding table converts position indices to embeddings
         self.position_embedding_table = nn.Embedding(block_size, n_embedding)
         # stack of transformer blocks to process the input
@@ -303,6 +314,34 @@ def classification_loss(model, x, targets):
     loss = F.cross_entropy(logits, targets)
     return loss
 
+@torch.no_grad()
+def evaluate(model, train_loader, validation_loader, criterion):
+    model.eval()  # Mettre le modèle en mode évaluation
+    results = {}
+
+    for split, loader in [("train", train_loader), ("validation", validation_loader)]:
+        total_loss = 0
+        total_correct = 0
+        total_samples = 0
+
+        for x, y in loader:
+            x, y = x.to(device), y.to(device)  # Déplacer les données sur le bon périphérique
+            logits = model(x)  # Obtenir les prédictions du modèle
+            loss = criterion(logits, y)  # Calculer la perte
+            total_loss += loss.item()
+
+            # Convertir les logits en prédictions de classe
+            predictions = torch.argmax(logits, dim=1)
+            total_correct += (predictions == y).sum().item()
+            total_samples += y.size(0)
+
+        # Calculer la perte moyenne et l'accuracy pour ce split
+        results[f"{split}_loss"] = total_loss / len(loader)
+        results[f"{split}_accuracy"] = total_correct / total_samples
+
+    model.train()  # Remettre le modèle en mode entraînement
+    return results
+
 def calculate_accuracy(model, data, labels):
     model.eval()
     with torch.no_grad():
@@ -315,6 +354,7 @@ def calculate_accuracy(model, data, labels):
 # Model initialization
 lm = GPTSentimentAnalysisModel().to(device)
 optimizer = torch.optim.AdamW(lm.parameters(), lr=learning_rate)
+criterion = nn.CrossEntropyLoss()
 
 print("Model initialized")
 
@@ -324,18 +364,16 @@ print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters'
 for i in range(max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
-        with torch.no_grad():
-            train_loss = classification_loss(lm, train_reviews, train_labels)
-            val_loss = classification_loss(lm, test_reviews, test_labels)
-            accuracy = calculate_accuracy(lm, test_reviews, test_labels)
-
-        print(f"Step {i}: Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Accuracy: {accuracy:.4f}")
+        results = evaluate(lm, train_loader, validation_loader, criterion)
+        print(f"Step {i}: Train Loss: {results['train_loss']:.4f}, Train Accuracy: {results['train_accuracy']:.4f}, "
+          f"Validation Loss: {results['validation_loss']:.4f}, Validation Accuracy: {results['validation_accuracy']:.4f}")
         
         wandb.log({
             "step": i,
-            "train_loss": train_loss.item(),
-            "validation_loss": val_loss.item(),
-            "accuracy": accuracy
+            "train_loss": results['train_loss'],
+            "train_accuracy": results['train_accuracy'],
+            "validation_loss": results['validation_loss'],
+            "validation_accuracy": results['validation_accuracy']
         })
 
         lm.train()
