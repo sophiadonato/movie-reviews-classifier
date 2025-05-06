@@ -17,11 +17,15 @@ import nltk
 # Library os imported to handle file and directory operations
 import os
 
+print("Imports done")
+
 # ====================================== GPU DETECTION ======================================
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Device: {device}")
 torch.manual_seed(100)
+
+print("GPU detection done")
 
 # ====================================== HYPERPARAMETERS ======================================
 
@@ -37,12 +41,16 @@ eval_every = 500
 eval_iters = 200
 save_every = 10000
 
+print("Hyperparameters done")
+
 # ====================================== CHECKPOINTS ======================================
 
 model_name = "sentiment-analysis-gpt"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok=True)
 checkpoint = f"{directory}/{model_name}.pt"
+
+print("Checkpoints done")
 
 # ====================================== WAND B ======================================
 
@@ -63,14 +71,20 @@ wandb.init(
     }
 )
 
+print("WandB done")
+
 # ====================================== DATA ======================================
 
 # Dataset loading
 file_path = "movie_reviews_dataset/all_reviews.csv"
 dataSet = pd.read_csv(file_path)
 
+print("Dataset loaded")
+
 # Decreasing the size of the dataset to speed up the training process
 dataSet = dataSet.sample(frac=0.1, random_state=42)
+
+print("Dataset size decreased")
 
 # DATASET PREPROCESSING
 
@@ -88,6 +102,8 @@ dataSet['reviewText'] = dataSet['reviewText'].apply(
     lambda x: ' '.join([word for word in x.split() if word not in stop_words])
 )
 
+print("Dataset preprocessed")
+
 # Preprocessing ideas 2 and 3 comes from the following link:
 # https://medium.com/@felixmutai/tokenization-in-sentiment-analysis-cd386a08fab
 
@@ -100,6 +116,7 @@ labels = dataSet['scoreSentiment'].tolist()
 
 tokenizer = ByteLevelBPETokenizer()
 tokenizer.train([file_path])
+vocab_size = tokenizer.get_vocab_size()
 
 # Add a special token <PAD> to the tokenizer vocabulary
 tokenizer.add_special_tokens(["<PAD>"])
@@ -115,6 +132,8 @@ decode = lambda l: tokenizer.decode(l)
 # During encoding,  each sequence is converted into a torch.LongTenser in order to be used by the model which only accepts torch tensors
 encoded_reviews = [torch.tensor(encode(review), dtype=torch.long).to(device) for review in reviews]
 encoded_labels = torch.tensor(labels, dtype=torch.long).to(device)
+
+print("Tokenization done")
 
 # Padding function
 def pad_sequences(sequences, max_length, pad_token_id):
@@ -145,13 +164,24 @@ test_reviews = pad_sequences(encoded_reviews[n:], max_length, pad_token_id)
 train_labels = encoded_labels[:n]
 test_labels = encoded_labels[n:]
 
+print("Train and test sets split")
+
 # DATA LOADER
 
+# Generate mini-batch of data for training
 def get_batch(data, labels):
+    # Randomly select batch_size sequences from the dataset
+    # In example of teacher, len(data) - block_size is used because 
+    # the model needs the next token to check if the prediction is
+    # correct or not. In our case, we do not need the next token.
     ix = torch.randint(len(data), (batch_size,))
+    # Select the corresponding labels for the selected sequences
     x = torch.stack([data[i] for i in ix])
+    # Select the corresponding labels for the selected sequences
     y = torch.stack([labels[i] for i in ix])
+    # Move the data and labels to the specified device
     x, y = x.to(device), y.to(device)
+    # Return the mini-batch of data and labels
     return x, y
 
 # ====================================== GPT SENTIMENT ANALYSIS MODEL ======================================
@@ -240,7 +270,7 @@ class GPTSentimentAnalysisModel(nn.Module):
     def __init__(self):
         super().__init__()
         # token embedding table converts token indices to embeddings
-        self.token_embedding_table = nn.Embedding(len(tokenizer.get_vocab()), n_embedding)
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embedding)
         # position embedding table converts position indices to embeddings
         self.position_embedding_table = nn.Embedding(block_size, n_embedding)
         # stack of transformer blocks to process the input
@@ -251,12 +281,19 @@ class GPTSentimentAnalysisModel(nn.Module):
 
     def forward(self, x):
         B, T = x.shape
+
+        # Tokens (x) are converted to embeddings vectors (tok_emb)
         tok_emb = self.token_embedding_table(x)  # (B, T, C)
+        # Position (0, 1, 2, ..., T-1) are converted to embeddings vectors (pos_emb)
         pos_emb = self.position_embedding_table(torch.arange(T, device=device))  # (T, C)
+        # The token embeddings and position embeddings are summed together to form the input to the transformer blocks
         h = tok_emb + pos_emb  # (B, T, C)
+        # The input is passed through the transformer blocks
         h = self.blocks(h)
+        # The final layer normalization is applied to the output of the transformer blocks
         h = self.ln_f(h)
-        h = h.mean(dim=1)  # Pooling on the sequence dimension
+        # Pooling on the sequence dimension
+        h = h.mean(dim=1)
         logits = self.classifier(h)  # (B, 2)
         return logits
 
@@ -270,6 +307,8 @@ def classification_loss(model, x, targets):
 # Model initialization
 lm = GPTSentimentAnalysisModel().to(device)
 optimizer = torch.optim.AdamW(lm.parameters(), lr=learning_rate)
+
+print("Model initialized")
 
 # ====================================== TRAINING LOOP ======================================
 
@@ -300,6 +339,8 @@ for i in range(max_iters + 1):
     # Model save
     if i % save_every == 0:
         torch.save(lm.state_dict(), checkpoint)
+
+print("Training done")
 
 # ====================================== FINAL EVALUATION ======================================
 
