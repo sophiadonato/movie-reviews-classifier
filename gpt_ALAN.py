@@ -24,6 +24,7 @@ import os
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
+from nltk.stem import WordNetLemmatizer
 
 print("Imports done")
 
@@ -116,6 +117,12 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex=T
 # )
 # not or never being stop words and having a strong impact on the sentiment,
 # stop words should not been removed
+
+# 4. Lemmatization to reduce words to their base form
+lemmatizer = WordNetLemmatizer()
+dataSet['reviewText'] = dataSet['reviewText'].apply(
+    lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
+)
 
 print("Dataset preprocessed")
 
