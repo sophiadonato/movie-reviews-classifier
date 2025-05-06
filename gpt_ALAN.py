@@ -1,3 +1,7 @@
+# Remarks : 
+# 1. GPT-style models are made for generation, not classification
+# 2. GPT 2/3/4 better for classification then 7
+
 # ====================================== IMPORTS ======================================
 
 # Library torch imported to build and train a GPT model for sentiment analysis
@@ -36,8 +40,10 @@ print("GPU detection done")
 batch_size = 16
 block_size = 256
 n_embedding = 16
-n_blocks = 4
-n_head = 2
+# Having a minimum large nb of blocks and heads is important to capture
+# complex patterns in the data
+n_blocks = 12
+n_head = 8
 dropout = 0.2
 max_iters = 50000
 learning_rate = 3e-4
@@ -46,6 +52,7 @@ eval_iters = 200
 save_every = 10000
 num_words = 10000
 max_seq_len = 256
+patience = 5
 
 print("Hyperparameters done")
 
@@ -101,12 +108,14 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex=T
 
 # 3. Removes stop words which do not add value to the analysis
 # Stopwords download
-nltk.download("stopwords")
-stop_words = set(stopwords.words('english'))
+# nltk.download("stopwords")
+# stop_words = set(stopwords.words('english'))
 
-dataSet['reviewText'] = dataSet['reviewText'].apply(
-    lambda x: ' '.join([word for word in x.split() if word not in stop_words])
-)
+# dataSet['reviewText'] = dataSet['reviewText'].apply(
+#     lambda x: ' '.join([word for word in x.split() if word not in stop_words])
+# )
+# not or never being stop words and having a strong impact on the sentiment,
+# stop words should not been removed
 
 print("Dataset preprocessed")
 
@@ -361,6 +370,9 @@ print("Model initialized")
 # ====================================== TRAINING LOOP ======================================
 
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
+
+best_validation_loss = float("inf")
+patience_counter = 0
 for i in range(max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
@@ -377,6 +389,16 @@ for i in range(max_iters + 1):
         })
 
         lm.train()
+
+        # Early stopping check
+        if results['validation_loss'] < best_validation_loss:
+            best_validation_loss = results['validation_loss']
+            patience_counter = 0  # Reinitialize the patience counter
+            # Save the best model
+            torch.save(lm.state_dict(), f"{checkpoint}_best")
+        else:
+            patience_counter += 1
+            print(f"Validation loss did not improve. Patience counter: {patience_counter}/{patience}")
 
     # Training
     optimizer.zero_grad()
