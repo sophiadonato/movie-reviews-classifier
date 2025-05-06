@@ -124,6 +124,15 @@ dataSet['reviewText'] = dataSet['reviewText'].apply(
     lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
 )
 
+# 5. Convert to lowercase
+dataSet['reviewText'] = dataSet['reviewText'].str.lower()
+
+# 6. Remove extra spaces
+dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
+
+# 7. Remove empty reviews
+dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
+
 print("Dataset preprocessed")
 
 # Preprocessing ideas 2 and 3 comes from the following link:
