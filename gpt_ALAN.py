@@ -39,7 +39,7 @@ print("GPU detection done")
 
 batch_size = 16
 block_size = 256
-n_embedding = 16
+n_embedding = 512
 # Having a minimum large nb of blocks and heads is important to capture
 # complex patterns in the data
 n_blocks = 12
