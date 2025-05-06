@@ -16,7 +16,7 @@ print(f"Using {device} device")
 
 vocab_n = 10000
 sequence_length = 64
-batch_size = 8
+batch_size = 32
 num_workers = 0
 
 learning_rate = 1e-3
@@ -151,14 +151,6 @@ def train(num_epochs):
     test_accuracy = []
 
     for i in range(num_epochs + 1):
-        if i % eval_every == 0:
-            print(f"step {i}: train loss {train_avg_loss} and validation loss {test_avg_loss}")
-            wandb.log({
-                "step": i,
-                "train loss": train_avg_loss,
-                "validation loss": test_avg_loss,
-            })
-
         print(f"Epoch number : {i+1}")
         train_losses = []
         test_losses = []
@@ -191,6 +183,17 @@ def train(num_epochs):
         test_accuracy.append(accuracy.cpu())
         train_avg_loss.append(torch.mean(torch.tensor(train_losses)))
         test_avg_loss.append(torch.mean(torch.tensor(test_losses)))
+
+        if i % eval_every == 0:
+            print(f"step {i}: train loss {train_avg_loss} and validation loss {test_avg_loss}")
+            wandb.log({
+                "step": i,
+                "train loss": train_avg_loss,
+                "validation loss": test_avg_loss,
+            })
+
+        if i % save_every == 0:
+            torch.save(network.state_dict(), checkpoint)
 
     return train_avg_loss, test_avg_loss, test_accuracy
 
