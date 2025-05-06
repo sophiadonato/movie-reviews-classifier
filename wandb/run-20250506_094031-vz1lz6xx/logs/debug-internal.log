@@ -1,0 +1,7 @@
+{"time":"2025-05-06T09:40:31.0959717+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\lvilo\\OneDrive - Universite de Liege\\Documents\\Cours\\Master 1\\Deep learning\\projet_tomate_pourrie\\wandb\\run-20250506_094031-vz1lz6xx\\logs\\debug-core.log"}
+{"time":"2025-05-06T09:40:31.8306075+02:00","level":"INFO","msg":"created new stream","id":"vz1lz6xx"}
+{"time":"2025-05-06T09:40:31.8306075+02:00","level":"INFO","msg":"stream: started","id":"vz1lz6xx"}
+{"time":"2025-05-06T09:40:31.8306075+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"vz1lz6xx"}
+{"time":"2025-05-06T09:40:31.8306075+02:00","level":"INFO","msg":"sender: started","stream_id":"vz1lz6xx"}
+{"time":"2025-05-06T09:40:31.8306075+02:00","level":"INFO","msg":"handler: started","stream_id":"vz1lz6xx"}
+{"time":"2025-05-06T09:40:32.1037709+02:00","level":"INFO","msg":"Starting system monitor"}

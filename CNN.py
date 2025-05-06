@@ -159,9 +159,6 @@ def train(num_epochs):
                 "validation loss": test_avg_loss,
             })
 
-        if i % save_every == 0:
-            torch.save(lm.module.state_dict(), f"{checkpoint}_{i}")
-
         print(f"Epoch number : {i+1}")
         train_losses = []
         test_losses = []
