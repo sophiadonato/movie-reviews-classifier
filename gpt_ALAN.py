@@ -313,6 +313,7 @@ print("Model initialized")
 
 for i in range(max_iters + 1):
     if i % eval_every == 0:
+        print(f"Step {i}...")
         # Evaluation on the test set
         with torch.no_grad():
             train_loss = classification_loss(lm, train_reviews, train_labels)
