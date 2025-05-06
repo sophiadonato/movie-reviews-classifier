@@ -27,11 +27,11 @@ torch.manual_seed(100)
 
 batch_size = 16
 block_size = 256
-n_embedding = 256
-n_blocks = 6
-n_head = 4
-dropout = 0.2
-max_iters = 50000
+n_embedding = 128
+n_blocks = 4
+n_head = 2
+dropout = 0.5
+max_iters = 5000
 learning_rate = 3e-4
 eval_every = 500
 eval_iters = 200
@@ -68,6 +68,9 @@ wandb.init(
 # Dataset loading
 file_path = "movie_reviews_dataset/all_reviews.csv"
 dataSet = pd.read_csv(file_path)
+
+# Decreasing the size of the dataset to speed up the training process
+dataSet = dataSet.sample(frac=0.1, random_state=42)
 
 # DATASET PREPROCESSING
 
@@ -132,7 +135,8 @@ def pad_sequences(sequences, max_length, pad_token_id):
 n = int(0.9 * len(reviews))
 
 # Define the maximum length for padding
-max_length = max(len(seq) for seq in encoded_reviews)
+# Limit the maximum length of the sequences to a fixed size (block_size) for training
+max_length = min(block_size, max(len(seq) for seq in encoded_reviews))
 
 # Apply padding to the sequences
 train_reviews = pad_sequences(encoded_reviews[:n], max_length, pad_token_id)
@@ -299,10 +303,10 @@ for i in range(max_iters + 1):
 
 # ====================================== FINAL EVALUATION ======================================
 
-from sklearn.metrics import classification_report
+# from sklearn.metrics import classification_report
 
-lm.eval()
-with torch.no_grad():
-    logits = lm(torch.stack(test_reviews))
-    predictions = torch.argmax(logits, dim=1)
-    print(classification_report(test_labels.cpu(), predictions.cpu(), target_names=["NEGATIVE", "POSITIVE"]))
+# lm.eval()
+# with torch.no_grad():
+#     logits = lm(torch.stack(test_reviews))
+#     predictions = torch.argmax(logits, dim=1)
+#     print(classification_report(test_labels.cpu(), predictions.cpu(), target_names=["NEGATIVE", "POSITIVE"]))
