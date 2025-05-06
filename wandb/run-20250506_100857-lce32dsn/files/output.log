@@ -1,0 +1,23 @@
+Parameters: 188.576 K parameters
+0
+Step 0 : Train accuracy 0.4739, Validation accuracy 0.4746
+1
+Step 1 : Train accuracy 0.8205, Validation accuracy 0.8134
+2
+Step 2 : Train accuracy 0.8282, Validation accuracy 0.8193
+3
+Step 3 : Train accuracy 0.8261, Validation accuracy 0.8096
+4
+Step 4 : Train accuracy 0.8345, Validation accuracy 0.8162
+5
+Step 5 : Train accuracy 0.8361, Validation accuracy 0.8158
+6
+Step 6 : Train accuracy 0.8347, Validation accuracy 0.8088
+7
+Step 7 : Train accuracy 0.8381, Validation accuracy 0.8111
+8
+Step 8 : Train accuracy 0.8374, Validation accuracy 0.8098
+9
+Step 9 : Train accuracy 0.8389, Validation accuracy 0.8095
+10
+Step 10 : Train accuracy 0.8382, Validation accuracy 0.8058

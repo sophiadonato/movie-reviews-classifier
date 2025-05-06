@@ -1,0 +1,2 @@
+tokenization by word : https://medium.com/@felixmutai/tokenization-in-sentiment-analysis-cd386a08fab
+tokenization by word : https://medium.com/@kwasiasomani85/movie-review-sentimental-classification-with-recurrent-neural-network-in-tensorflow-3c0ce1c1fea6

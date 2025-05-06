@@ -1,0 +1,33 @@
+Parameters: 401.025 K parameters
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 138, in <module>
+    out = evaluate(net)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 124, in evaluate
+    loss = criterion(pred, y)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\loss.py", line 699, in forward
+    return F.binary_cross_entropy(
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\functional.py", line 3560, in binary_cross_entropy
+    raise ValueError(
+ValueError: Using a target size (torch.Size([32])) that is different to the input size (torch.Size([32, 1])) is deprecated. Please ensure they have the same size.
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 138, in <module>
+    out = evaluate(net)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 124, in evaluate
+    loss = criterion(pred, y)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\loss.py", line 699, in forward
+    return F.binary_cross_entropy(
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\functional.py", line 3560, in binary_cross_entropy
+    raise ValueError(
+ValueError: Using a target size (torch.Size([32])) that is different to the input size (torch.Size([32, 1])) is deprecated. Please ensure they have the same size.

@@ -1,0 +1,21 @@
+{"time":"2025-05-06T09:24:12.1825236+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\wandb\\run-20250506_092412-ck0gqbib\\logs\\debug-core.log"}
+{"time":"2025-05-06T09:24:12.9848426+02:00","level":"INFO","msg":"created new stream","id":"ck0gqbib"}
+{"time":"2025-05-06T09:24:12.9848426+02:00","level":"INFO","msg":"stream: started","id":"ck0gqbib"}
+{"time":"2025-05-06T09:24:12.9848426+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"ck0gqbib"}
+{"time":"2025-05-06T09:24:12.9848426+02:00","level":"INFO","msg":"handler: started","stream_id":"ck0gqbib"}
+{"time":"2025-05-06T09:24:12.9848426+02:00","level":"INFO","msg":"sender: started","stream_id":"ck0gqbib"}
+{"time":"2025-05-06T09:24:13.2739087+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-06T09:24:28.2912644+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-06T09:24:43.2913929+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-06T09:24:58.2964382+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-06T09:25:13.3011628+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-06T09:25:28.3221743+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-06T09:25:43.2937232+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-06T09:25:49.8773244+02:00","level":"INFO","msg":"stream: closing","id":"ck0gqbib"}
+{"time":"2025-05-06T09:25:49.8796812+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-06T09:25:49.8797787+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-06T09:25:50.7751523+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-06T09:25:50.9914865+02:00","level":"INFO","msg":"sender: closed","stream_id":"ck0gqbib"}
+{"time":"2025-05-06T09:25:50.9927729+02:00","level":"INFO","msg":"handler: closed","stream_id":"ck0gqbib"}
+{"time":"2025-05-06T09:25:50.9927729+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ck0gqbib"}
+{"time":"2025-05-06T09:25:50.9933347+02:00","level":"INFO","msg":"stream: closed","id":"ck0gqbib"}

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 73, in <module>
+    dataset = data.TensorDataset(X_tensor, y_tensor)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\pandas\core\generic.py", line 6299, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'DataFrame' object has no attribute 'TensorDataset'
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 73, in <module>
+    dataset = data.TensorDataset(X_tensor, y_tensor)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\pandas\core\generic.py", line 6299, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'DataFrame' object has no attribute 'TensorDataset'

@@ -1,0 +1,22 @@
+{"time":"2025-05-05T10:24:01.2138377+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\wandb\\run-20250505_102401-rhztsyuo\\logs\\debug-core.log"}
+{"time":"2025-05-05T10:24:02.2580231+02:00","level":"INFO","msg":"created new stream","id":"rhztsyuo"}
+{"time":"2025-05-05T10:24:02.2581298+02:00","level":"INFO","msg":"stream: started","id":"rhztsyuo"}
+{"time":"2025-05-05T10:24:02.2581298+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"rhztsyuo"}
+{"time":"2025-05-05T10:24:02.2581298+02:00","level":"INFO","msg":"handler: started","stream_id":"rhztsyuo"}
+{"time":"2025-05-05T10:24:02.2581298+02:00","level":"INFO","msg":"sender: started","stream_id":"rhztsyuo"}
+{"time":"2025-05-05T10:24:02.5369595+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-05T10:24:17.552866+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:24:32.5599766+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:24:47.5708725+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:25:02.5572987+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:25:17.5556573+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:25:32.5751522+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:25:47.5838892+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-05T10:25:47.6226137+02:00","level":"INFO","msg":"stream: closing","id":"rhztsyuo"}
+{"time":"2025-05-05T10:25:47.6240519+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-05T10:25:47.6240519+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-05T10:25:48.5401367+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-05T10:25:49.4609155+02:00","level":"INFO","msg":"sender: closed","stream_id":"rhztsyuo"}
+{"time":"2025-05-05T10:25:49.4614058+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"rhztsyuo"}
+{"time":"2025-05-05T10:25:49.4614058+02:00","level":"INFO","msg":"handler: closed","stream_id":"rhztsyuo"}
+{"time":"2025-05-05T10:25:49.4614058+02:00","level":"INFO","msg":"stream: closed","id":"rhztsyuo"}

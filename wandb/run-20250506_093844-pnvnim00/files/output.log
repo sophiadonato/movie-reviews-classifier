@@ -1,0 +1,30 @@
+Parameters: 401.025 K parameters
+Step 0 : Train accuracy 0.3294, Validation accuracy 0.3300
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 154, in <module>
+    optimizer.zero_grad()
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\_compile.py", line 51, in inner
+    return disable_fn(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\_dynamo\eval_frame.py", line 838, in _fn
+    return fn(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\optim\optimizer.py", line 962, in zero_grad
+    with torch.autograd.profiler.record_function(self._zero_grad_profile_name):
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\autograd\profiler.py", line 767, in __init__
+    Optional["torch.classes.profiler._RecordFunction"], None
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\typing.py", line 309, in inner
+    return cached(*args, **kwds)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 154, in <module>
+    optimizer.zero_grad()
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\_compile.py", line 51, in inner
+    return disable_fn(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\_dynamo\eval_frame.py", line 838, in _fn
+    return fn(*args, **kwargs)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\optim\optimizer.py", line 962, in zero_grad
+    with torch.autograd.profiler.record_function(self._zero_grad_profile_name):
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\autograd\profiler.py", line 767, in __init__
+    Optional["torch.classes.profiler._RecordFunction"], None
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\typing.py", line 309, in inner
+    return cached(*args, **kwds)
+KeyboardInterrupt

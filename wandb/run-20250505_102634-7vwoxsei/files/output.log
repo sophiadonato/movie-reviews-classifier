@@ -1,0 +1,21 @@
+Epoch 10/10- Accuracy: 0.7000
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 138, in <module>
+    torch.save(net.state_dict(), checkpoint)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\serialization.py", line 964, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\serialization.py", line 828, in _open_zipfile_writer
+    return container(name_or_buffer)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\serialization.py", line 792, in __init__
+    torch._C.PyTorchFileWriter(
+RuntimeError: Parent directory C:/Users/sdona/Documents/M1Q2_DeepLearning/projet/checkpoints does not exist.
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 138, in <module>
+    torch.save(net.state_dict(), checkpoint)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\serialization.py", line 964, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\serialization.py", line 828, in _open_zipfile_writer
+    return container(name_or_buffer)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\serialization.py", line 792, in __init__
+    torch._C.PyTorchFileWriter(
+RuntimeError: Parent directory C:/Users/sdona/Documents/M1Q2_DeepLearning/projet/checkpoints does not exist.

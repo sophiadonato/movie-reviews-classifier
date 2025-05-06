@@ -1,0 +1,15 @@
+{"time":"2025-05-05T10:08:37.7134497+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\wandb\\run-20250505_100837-n2o3trge\\logs\\debug-core.log"}
+{"time":"2025-05-05T10:08:40.4776019+02:00","level":"INFO","msg":"created new stream","id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.4776019+02:00","level":"INFO","msg":"stream: started","id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.4776019+02:00","level":"INFO","msg":"handler: started","stream_id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.4781755+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.4781755+02:00","level":"INFO","msg":"sender: started","stream_id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.4838938+02:00","level":"INFO","msg":"stream: closing","id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.7838603+02:00","level":"ERROR","msg":"sender: upsertConfig: RunRecord is nil"}
+{"time":"2025-05-05T10:08:40.9726246+02:00","level":"ERROR","msg":"HTTP error","status":404,"method":"POST","url":"https://api.wandb.ai/graphql"}
+{"time":"2025-05-05T10:08:40.9731895+02:00","level":"ERROR","msg":"runfiles: CreateRunFiles returned error: returned error 404: {\"data\":{\"createRunFiles\":null},\"errors\":[{\"message\":\"project /review-classifier not found during createRunFiles\",\"path\":[\"createRunFiles\"]}]}"}
+{"time":"2025-05-05T10:08:40.9765892+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-05T10:08:40.9765892+02:00","level":"INFO","msg":"handler: closed","stream_id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.9765892+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.9765892+02:00","level":"INFO","msg":"sender: closed","stream_id":"n2o3trge"}
+{"time":"2025-05-05T10:08:40.9771574+02:00","level":"INFO","msg":"stream: closed","id":"n2o3trge"}
