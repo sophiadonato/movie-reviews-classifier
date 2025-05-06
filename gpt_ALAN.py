@@ -29,9 +29,9 @@ print("GPU detection done")
 
 # ====================================== HYPERPARAMETERS ======================================
 
-batch_size = 16
+batch_size = 4
 block_size = 256
-n_embedding = 128
+n_embedding = 16
 n_blocks = 4
 n_head = 2
 dropout = 0.5
