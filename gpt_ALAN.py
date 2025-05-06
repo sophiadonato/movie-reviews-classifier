@@ -29,13 +29,13 @@ print("GPU detection done")
 
 # ====================================== HYPERPARAMETERS ======================================
 
-batch_size = 4
+batch_size = 16
 block_size = 256
 n_embedding = 16
 n_blocks = 4
 n_head = 2
-dropout = 0.5
-max_iters = 5000
+dropout = 0.2
+max_iters = 50000
 learning_rate = 3e-4
 eval_every = 500
 eval_iters = 200
@@ -303,6 +303,15 @@ def classification_loss(model, x, targets):
     loss = F.cross_entropy(logits, targets)
     return loss
 
+def calculate_accuracy(model, data, labels):
+    model.eval()
+    with torch.no_grad():
+        logits = model(data)
+        predictions = torch.argmax(logits, dim=1)
+        correct = (predictions == labels).sum().item()
+        accuracy = correct / len(labels)
+    return accuracy
+
 # Model initialization
 lm = GPTSentimentAnalysisModel().to(device)
 optimizer = torch.optim.AdamW(lm.parameters(), lr=learning_rate)
@@ -311,20 +320,22 @@ print("Model initialized")
 
 # ====================================== TRAINING LOOP ======================================
 
+print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 for i in range(max_iters + 1):
     if i % eval_every == 0:
-        print(f"Step {i}...")
         # Evaluation on the test set
         with torch.no_grad():
             train_loss = classification_loss(lm, train_reviews, train_labels)
             val_loss = classification_loss(lm, test_reviews, test_labels)
+            accuracy = calculate_accuracy(lm, test_reviews, test_labels)
 
-        print(f"Step {i}: Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+        print(f"Step {i}: Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Accuracy: {accuracy:.4f}")
         
         wandb.log({
             "step": i,
             "train_loss": train_loss.item(),
-            "validation_loss": val_loss.item()
+            "validation_loss": val_loss.item(),
+            "accuracy": accuracy
         })
 
         lm.train()
