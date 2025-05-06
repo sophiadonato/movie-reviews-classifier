@@ -16,7 +16,7 @@ print(f"Using {device} device")
 
 vocab_n = 10000
 sequence_length = 64
-batch_size = 32
+batch_size = 8
 num_workers = 0
 
 learning_rate = 1e-3
@@ -30,16 +30,21 @@ checkpoint = f"{directory}/{model_name}.pt"
 input_features = sequence_length
 output_features = 2
 
-output_Features1 = 32
-output_Features2 = 64
+output_Features1 = 64
+output_Features2 = 128
 
-output_Features_final = 64
+output_Features_final = 128
+
+output_linear1 = 64
+output_linear2 = 32
 
 number_of_conv_layers = 2
 number_of_linear_layers = 2
 
 eval_every = 1
 save_every = 10
+
+dataset_part = 0.10
 
 
 wandb.init(
@@ -57,6 +62,7 @@ wandb.init(
         "number of linear layers": number_of_linear_layers,
 
         "eval_every": eval_every,
+        "part of the dataset": dataset_part,
     }
 )
 
@@ -67,7 +73,7 @@ class SentimentDataset(data.Dataset):
 
         tokenizer = Tokenizer(models.BPE())
         tokenizer.pre_tokenizer = Whitespace()
-        tokenizer.enable_padding(max_length=sequence_length)
+        tokenizer.enable_padding(length=sequence_length)
         tokenizer.enable_truncation(max_length=sequence_length)
         tokenizer_trainer = trainers.BpeTrainer(vocab_size=vocab_n)
 
@@ -81,9 +87,10 @@ class SentimentDataset(data.Dataset):
             elif row['scoreSentiment'] == "NEGATIVE":
                 data.append((row['reviewText'], 0))
 
+        datalen = round(len(data) * dataset_part)
 
-        train_size = int(0.8 * len(data))
-        test_size = len(data) - train_size
+        train_size = int(0.8 * datalen)
+        test_size = datalen - train_size
 
         trainData = data[:train_size]
         textToTrainTO = []
@@ -106,7 +113,7 @@ class SentimentDataset(data.Dataset):
         text, label = self.data[idx]
         encoding = self.tokenizer.encode(text)
 
-        return torch.tensor(encoding.ids, dtype=torch.float), label
+        return torch.tensor(encoding.ids, dtype=torch.float), torch.tensor(label, dtype=torch.long)
 
 
 
@@ -117,18 +124,18 @@ for i in range(number_of_conv_layers):
 class CNN(nn.Sequential):
     def __init__(self):
         super().__init__(
-            nn.Conv1d(1, 32, 3),
+            nn.Conv1d(1, output_Features1, 3),
             nn.ReLU(),
             nn.MaxPool1d(2, stride=2),
-            nn.Conv1d(32, 64, 3),
+            nn.Conv1d(output_Features1, output_Features2, 3),
             nn.ReLU(),
             nn.MaxPool1d(2, stride=2),
             nn.Flatten(),
-            nn.Linear(input_features * output_Features_final, 128),
+            nn.Linear(input_features * output_Features_final, output_linear1),
             nn.ReLU(),
-            nn.Linear(128, 64),
+            nn.Linear(output_linear1, output_linear2),
             nn.ReLU(),
-            nn.Linear(64, output_features),
+            nn.Linear(output_linear2, output_features),
         )
 
 network = CNN()
@@ -145,6 +152,7 @@ my_trainloader = data.DataLoader(my_trainset, batch_size=batch_size, shuffle=Tru
 my_testset = SentimentDataset('rotten_tomatoes_movie_reviews.csv', train=False)
 my_testloader = data.DataLoader(my_testset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
+print(f"Parameters: {sum(p.numel() for p in network.parameters())/1e6} M parameters")
 def train(num_epochs):
     train_avg_loss = []
     test_avg_loss = []
@@ -188,12 +196,13 @@ def train(num_epochs):
             print(f"step {i}: train loss {train_avg_loss} and validation loss {test_avg_loss}")
             wandb.log({
                 "step": i,
-                "train loss": train_avg_loss,
-                "validation loss": test_avg_loss,
+                "train loss": train_avg_loss[i],
+                "validation loss": test_avg_loss[i],
+                "test accuracy": test_accuracy[i],
             })
-
         if i % save_every == 0:
             torch.save(network.state_dict(), checkpoint)
+
 
     return train_avg_loss, test_avg_loss, test_accuracy
 
