@@ -9,14 +9,12 @@ import wandb
 from tokenizers import Tokenizer, models, trainers
 from tokenizers.pre_tokenizers import Whitespace
 
-from torchvision import datasets, transforms, utils
-
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
 vocab_n = 10000
-sequence_length = 64
-batch_size = 8
+sequence_length = 128
+batch_size = 32
 num_workers = 0
 
 learning_rate = 1e-3
@@ -30,10 +28,10 @@ checkpoint = f"{directory}/{model_name}.pt"
 input_features = sequence_length
 output_features = 2
 
-output_Features1 = 32
-output_Features2 = 64
+output_Features1 = 64
+output_Features2 = 128
 
-output_Features_final = 64
+output_Features_final = 128
 
 number_of_conv_layers = 2
 number_of_linear_layers = 2
@@ -67,7 +65,7 @@ class SentimentDataset(data.Dataset):
 
         tokenizer = Tokenizer(models.BPE())
         tokenizer.pre_tokenizer = Whitespace()
-        tokenizer.enable_padding(max_length=sequence_length)
+        tokenizer.enable_padding(length=sequence_length)
         tokenizer.enable_truncation(max_length=sequence_length)
         tokenizer_trainer = trainers.BpeTrainer(vocab_size=vocab_n)
 
@@ -117,10 +115,10 @@ for i in range(number_of_conv_layers):
 class CNN(nn.Sequential):
     def __init__(self):
         super().__init__(
-            nn.Conv1d(1, 32, 3),
+            nn.Conv1d(1, 64, 3),
             nn.ReLU(),
             nn.MaxPool1d(2, stride=2),
-            nn.Conv1d(32, 64, 3),
+            nn.Conv1d(64, 128, 3),
             nn.ReLU(),
             nn.MaxPool1d(2, stride=2),
             nn.Flatten(),
@@ -136,7 +134,7 @@ network = CNN()
 device = torch.device(device)
 network.to(device)
 
-criterion = nn.CrossEntropyLoss()
+criterion = nn.BCELoss()
 optimizer = optim.Adam(network.parameters(), lr=learning_rate)
 
 my_trainset = SentimentDataset('rotten_tomatoes_movie_reviews.csv', train=True)
@@ -150,12 +148,15 @@ def train(num_epochs):
     test_avg_loss = []
     test_accuracy = []
 
+    print("Parameters:", sum(p.numel() for p in network.parameters())/1e6, 'M parameters')
+
     for i in range(num_epochs + 1):
         print(f"Epoch number : {i+1}")
         train_losses = []
         test_losses = []
 
         for x, y in my_trainloader:
+            print(x)
             x, y = x.unsqueeze(1).to(device), y.to(device)
 
             pred = network(x)
@@ -188,12 +189,13 @@ def train(num_epochs):
             print(f"step {i}: train loss {train_avg_loss} and validation loss {test_avg_loss}")
             wandb.log({
                 "step": i,
-                "train loss": train_avg_loss,
-                "validation loss": test_avg_loss,
+                "train loss": train_avg_loss[i],
+                "validation loss": test_avg_loss[i],
             })
 
         if i % save_every == 0:
-            torch.save(network.state_dict(), checkpoint)
+            torch.save(network.module.state_dict(), f"{checkpoint}_{i}")
+
 
     return train_avg_loss, test_avg_loss, test_accuracy
 
