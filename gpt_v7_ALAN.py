@@ -38,21 +38,21 @@ print("GPU detection done")
 
 # ====================================== HYPERPARAMETERS ======================================
 
-batch_size = 8
-block_size = 256
+batch_size = 16
+block_size = 128
 n_embedding = 256
 # Having a minimum large nb of blocks and heads is important to capture
 # complex patterns in the data
-n_blocks = 6
+n_blocks = 4
 n_head = 4
-dropout = 0.2
-max_iters = 5000
+dropout = 0.1
+max_iters = 3000
 learning_rate = 3e-4
 eval_every = 500
 eval_iters = 200
-save_every = 10000
-num_words = 10000
-max_seq_len = 256
+save_every = 1000
+num_words = 20000
+max_seq_len = 128
 patience = 5
 
 print("Hyperparameters done")
@@ -96,7 +96,7 @@ dataSet = pd.read_csv(file_path)
 print("Dataset loaded")
 
 # Decreasing the size of the dataset to speed up the training process
-dataSet = dataSet.sample(frac=0.1, random_state=42)
+# dataSet = dataSet.sample(frac=0.1, random_state=42)
 
 print("Dataset size decreased")
 
