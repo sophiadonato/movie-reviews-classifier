@@ -16,11 +16,11 @@ print(f"Using {device} device")
 
 vocab_n = 10000
 sequence_length = 64
-batch_size = 8
+batch_size = 32
 num_workers = 0
 
 learning_rate = 1e-3
-num_epochs = 20
+num_epochs = 50
 
 model_name = "CNN_2Layer_20"
 directory = "../vilour/CNN"
@@ -31,15 +31,17 @@ input_features = sequence_length
 output_features = 2
 
 output_Features1 = 64
-output_Features2 = 128
+output_Features2 = 256
+output_Features3 = 512
 
-output_Features_final = 128
+output_Features_final = 512
 
-output_linear1 = 64
-output_linear2 = 32
+output_linear1 = 256
+output_linear2 = 128
+output_linear3 = 64
 
-number_of_conv_layers = 2
-number_of_linear_layers = 2
+number_of_conv_layers = 3
+number_of_linear_layers = 3
 
 eval_every = 1
 save_every = 10
@@ -130,12 +132,16 @@ class CNN(nn.Sequential):
             nn.Conv1d(output_Features1, output_Features2, 3),
             nn.ReLU(),
             nn.MaxPool1d(2, stride=2),
+            nn.Conv1d(output_Features2, output_Features3, 3),
+            nn.MaxPool1d(2, stride=2),
             nn.Flatten(),
             nn.Linear(input_features * output_Features_final, output_linear1),
             nn.ReLU(),
             nn.Linear(output_linear1, output_linear2),
             nn.ReLU(),
-            nn.Linear(output_linear2, output_features),
+            nn.Linear(output_linear2, output_linear3),
+            nn.ReLU(),
+            nn.Linear(output_linear3, output_features),
         )
 
 network = CNN()
@@ -188,12 +194,13 @@ def train(num_epochs):
 
             accuracy = correct / len(my_testset)
 
+        print(f"The accuracy is {accuracy}")
         test_accuracy.append(accuracy.cpu())
         train_avg_loss.append(torch.mean(torch.tensor(train_losses)))
         test_avg_loss.append(torch.mean(torch.tensor(test_losses)))
 
         if i % eval_every == 0:
-            print(f"step {i}: train loss {train_avg_loss} and validation loss {test_avg_loss}")
+            print(f"step {i}: train loss {train_avg_loss}, validation loss {test_avg_loss} and test accuracy = {test_accuracy}")
             wandb.log({
                 "step": i,
                 "train loss": train_avg_loss[i],
