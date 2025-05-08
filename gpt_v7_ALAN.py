@@ -129,7 +129,7 @@ dataSet['reviewText'] = dataSet['reviewText'].apply(
 )
 
 # 5. Convert to lowercase
-dataSet['reviewText'] = dataSet['reviewText'].str.lower()
+# dataSet['reviewText'] = dataSet['reviewText'].str.lower()
 
 # 6. Remove extra spaces
 dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
