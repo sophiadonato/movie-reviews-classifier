@@ -3,6 +3,11 @@
 # 2. GPT 2/3/4 better for classification then 7
 
 # Search about scheduling in chap 4 of deepLearning
+# Search about warm up
+# Mixed Precision Training
+# Weight Decay
+# Data augmentation
+# Adjust dynamically batch size
 
 # ====================================== IMPORTS ======================================
 
@@ -49,7 +54,7 @@ n_embedding = 512
 n_blocks = 8
 n_head = 8
 dropout = 0.2
-max_iters = 5000
+max_iters = 50000
 learning_rate = 1e-4
 eval_every = 500
 eval_iters = 200
@@ -122,11 +127,11 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex=T
 # stop words should not been removed
 
 # 4. Lemmatization to reduce words to their base form
-# nltk.download('wordnet')
-# lemmatizer = WordNetLemmatizer()
-# dataSet['reviewText'] = dataSet['reviewText'].apply(
-#     lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
-# )
+nltk.download('wordnet')
+lemmatizer = WordNetLemmatizer()
+dataSet['reviewText'] = dataSet['reviewText'].apply(
+    lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
+)
 
 # 5. Convert to lowercase
 dataSet['reviewText'] = dataSet['reviewText'].str.lower()
