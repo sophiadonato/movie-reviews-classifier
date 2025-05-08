@@ -1,0 +1,17 @@
+step 0: train loss [] and validation loss []
+Traceback (most recent call last):
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 202, in <module>
+    train_avg_loss, test_avg_loss, test_accuracy = train(num_epochs)
+                                                   ^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 163, in train
+    torch.save(network.state_dict(), checkpoint)
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\serialization.py", line 943, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\serialization.py", line 810, in _open_zipfile_writer
+    return container(name_or_buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\serialization.py", line 781, in __init__
+    super().__init__(torch._C.PyTorchFileWriter(self.name, _compute_crc32))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Parent directory ../vilour/CNN does not exist.

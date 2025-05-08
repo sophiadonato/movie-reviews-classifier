@@ -1,0 +1,10 @@
+Parameters: 0.141858 M parameters
+Epoch number : 1
+Traceback (most recent call last):
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 210, in <module>
+    train_avg_loss, test_avg_loss, test_accuracy = train(num_epochs)
+                                                   ^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 171, in train
+    train_losses.append(loss.detach())
+                        ^^^^^^^^^^^^^
+KeyboardInterrupt

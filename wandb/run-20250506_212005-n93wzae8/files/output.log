@@ -1,0 +1,15 @@
+Epoch number : 1
+step 0: train loss [tensor(0.6390)] and validation loss [tensor(0.6367)]
+Epoch number : 2
+Traceback (most recent call last):
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 202, in <module>
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 167, in train
+    train_losses.append(loss.detach())
+    ^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\optim\optimizer.py", line 478, in wrapper
+    with torch.autograd.profiler.record_function(profile_name):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\autograd\profiler.py", line 757, in __exit__
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any):
+
+KeyboardInterrupt

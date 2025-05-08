@@ -1,0 +1,15 @@
+{"time":"2025-05-06T21:10:24.1696361+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\lvilo\\OneDrive - Universite de Liege\\Documents\\Cours\\Master 1\\Deep learning\\projet_tomate_pourrie\\wandb\\run-20250506_211024-ethpqqio\\logs\\debug-core.log"}
+{"time":"2025-05-06T21:10:24.5899391+02:00","level":"INFO","msg":"created new stream","id":"ethpqqio"}
+{"time":"2025-05-06T21:10:24.5899391+02:00","level":"INFO","msg":"stream: started","id":"ethpqqio"}
+{"time":"2025-05-06T21:10:24.5899391+02:00","level":"INFO","msg":"sender: started","stream_id":"ethpqqio"}
+{"time":"2025-05-06T21:10:24.5899391+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"ethpqqio"}
+{"time":"2025-05-06T21:10:24.5899391+02:00","level":"INFO","msg":"handler: started","stream_id":"ethpqqio"}
+{"time":"2025-05-06T21:10:24.8948466+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-06T21:17:24.9881851+02:00","level":"INFO","msg":"stream: closing","id":"ethpqqio"}
+{"time":"2025-05-06T21:17:24.9881851+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-06T21:17:24.9887122+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-06T21:17:25.6795429+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-06T21:17:26.0412966+02:00","level":"INFO","msg":"sender: closed","stream_id":"ethpqqio"}
+{"time":"2025-05-06T21:17:26.0417997+02:00","level":"INFO","msg":"handler: closed","stream_id":"ethpqqio"}
+{"time":"2025-05-06T21:17:26.0417997+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ethpqqio"}
+{"time":"2025-05-06T21:17:26.0417997+02:00","level":"INFO","msg":"stream: closed","id":"ethpqqio"}

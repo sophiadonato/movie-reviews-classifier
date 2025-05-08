@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
 import pandas as pd
 import wandb
-from tokenizers import Tokenizer, models, trainers
-from tokenizers.pre_tokenizers import Whitespace
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from torchvision import datasets, transforms, utils
 
@@ -15,7 +16,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
 vocab_n = 10000
-sequence_length = 64
+sequence_length = 100
 batch_size = 32
 num_workers = 0
 
@@ -28,11 +29,12 @@ checkpoint = f"{directory}/{model_name}.pt"
 
 
 input_features = sequence_length
-output_features = 2
+output_features = 1
 
 output_Features1 = 64
 output_Features2 = 256
 output_Features3 = 512
+kernel_size = 3
 
 output_Features_final = 512
 
@@ -61,6 +63,7 @@ wandb.init(
         "num_epochs": num_epochs,
 
         "number of conv layers": number_of_conv_layers,
+        "kernel size": kernel_size,
         "number of linear layers": number_of_linear_layers,
 
         "eval_every": eval_every,
@@ -68,54 +71,41 @@ wandb.init(
     }
 )
 
-class SentimentDataset(data.Dataset):
-    def __init__(self, root_dir, train=True):
-        super().__init__()
-        dataSet = pd.read_csv(root_dir)
+dataSet = pd.read_csv(root_dir)
+dataSet = dataSet.dropna(subset=["reviewText"])
 
-        tokenizer = Tokenizer(models.BPE())
-        tokenizer.pre_tokenizer = Whitespace()
-        tokenizer.enable_padding(length=sequence_length)
-        tokenizer.enable_truncation(max_length=sequence_length)
-        tokenizer_trainer = trainers.BpeTrainer(vocab_size=vocab_n)
+sentiment_mapping = {'POSITIVE': 0, 'NEGATIVE': 1}
+dataSet["scoreSentiment"] = dataSet["scoreSentiment"].map(sentiment_mapping).to_numpy()
 
+def clean_text(text):
+    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip().lower()
 
-        data = []
-        for index, row in dataSet.iterrows():
-            if not isinstance(row['reviewText'], str):
-                continue
-            if row['scoreSentiment'] == "POSITIVE":
-                data.append((row['reviewText'], 1))
-            elif row['scoreSentiment'] == "NEGATIVE":
-                data.append((row['reviewText'], 0))
+dataSet["reviewText"] = dataSet["reviewText"].apply(clean_text)
 
-        datalen = round(len(data) * dataset_part)
+X = dataSet["reviewText"].to_numpy()
+Y = dataSet["scoreSentiment"].to_numpy()
 
-        train_size = int(0.8 * datalen)
-        test_size = datalen - train_size
+tokenizer = Tokenizer(num_words=vocab_n)
+tokenizer.fit_on_texts(X)
+X_sequences = tokenizer.texts_to_sequence(X)
+vocab_size = vocab_n + 1
 
-        trainData = data[:train_size]
-        textToTrainTO = []
-        for text, label in trainData:
-            textToTrainTO.append(text)
+X_padded = pad_sequences(X_sequences, padding='post', maxlen=sequence_length)
 
-        for i in range(len(textToTrainTO)):
-            if i > 10:
-                break
+datalen = round(len(dataSet) * dataset_part)
 
-        tokenizer.train_from_iterator(textToTrainTO, trainer=tokenizer_trainer)
-        self.tokenizer = tokenizer
+train_size = int(0.8 * datalen)
+test_size = datalen - train_size
 
-        self.data = data[:train_size] if train else data[train_size:]
+X_tensor = torch.tensor(X_padded, dtype=torch.long)
+y_tensor = torch.tensor(Y, dtype=torch.float32)
 
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        text, label = self.data[idx]
-        encoding = self.tokenizer.encode(text)
-
-        return torch.tensor(encoding.ids, dtype=torch.float), torch.tensor(label, dtype=torch.long)
+dataset = dataSet.TensorDataset(X_tensor, y_tensor)
+train_set, test_set = data.random_split(dataset, [train_size, test_size])
+my_trainloader = dataSet.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+my_testloader = dataSet.DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
 
 
@@ -126,7 +116,8 @@ for i in range(number_of_conv_layers):
 class CNN(nn.Sequential):
     def __init__(self):
         super().__init__(
-            nn.Conv1d(1, output_Features1, 3),
+            nn.Embedding(vocab_size, 15),
+            nn.Conv1d(15, output_Features1, 3),
             nn.ReLU(),
             nn.MaxPool1d(2, stride=2),
             nn.Conv1d(output_Features1, output_Features2, 3),
@@ -142,6 +133,7 @@ class CNN(nn.Sequential):
             nn.Linear(output_linear2, output_linear3),
             nn.ReLU(),
             nn.Linear(output_linear3, output_features),
+            nn.Sigmoif()
         )
 
 network = CNN()
@@ -149,14 +141,8 @@ network = CNN()
 device = torch.device(device)
 network.to(device)
 
-criterion = nn.CrossEntropyLoss()
+criterion = nn.BCELoss()
 optimizer = optim.Adam(network.parameters(), lr=learning_rate)
-
-my_trainset = SentimentDataset('rotten_tomatoes_movie_reviews.csv', train=True)
-my_trainloader = data.DataLoader(my_trainset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-
-my_testset = SentimentDataset('rotten_tomatoes_movie_reviews.csv', train=False)
-my_testloader = data.DataLoader(my_testset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
 print(f"Parameters: {sum(p.numel() for p in network.parameters())/1e6} M parameters")
 def train(num_epochs):
@@ -169,12 +155,12 @@ def train(num_epochs):
         train_losses = []
         test_losses = []
 
-        for x, y in my_trainloader:
-            x, y = x.unsqueeze(1).to(device), y.to(device)
+        network.train()
 
+        for x, y in my_trainloader:
             pred = network(x)
             loss = criterion(pred, y)
-            train_losses.append(loss.detach())
+            train_losses.append(loss.item())
 
             optimizer.zero_grad()
             loss.backward()
@@ -183,13 +169,11 @@ def train(num_epochs):
         with torch.no_grad():
             correct = 0
             for x, y in my_testloader:
-                x, y = x.unsqueeze(1).to(device), y.to(device)
-
                 pred = network(x)
                 loss = criterion(pred, y)
                 test_losses.append(loss.detach())
 
-                y_pred = pred.argmax(dim=1)
+                y_pred = (pred > 0.5).float()
                 correct = correct + (y_pred == y).sum()
 
             accuracy = correct / len(my_testset)

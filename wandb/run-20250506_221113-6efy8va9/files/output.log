@@ -1,0 +1,22 @@
+Epoch number : 1
+Traceback (most recent call last):
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 206, in <module>
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 178, in train
+    correct = 0
+               ^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\nn\modules\container.py", line 250, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\nn\modules\module.py", line 1743, in _call_impl
+    def _call_impl(self, *args, **kwargs):
+
+KeyboardInterrupt

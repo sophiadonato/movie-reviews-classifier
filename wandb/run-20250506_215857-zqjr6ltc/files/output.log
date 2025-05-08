@@ -1,0 +1,21 @@
+Epoch number : 1
+Traceback (most recent call last):
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 206, in <module>
+    train_avg_loss, test_avg_loss, test_accuracy = train(num_epochs)
+                                                   ^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 175, in train
+    for x, y in my_testloader:
+                ^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\utils\data\dataloader.py", line 708, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\utils\data\dataloader.py", line 764, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lvilo\miniconda3\envs\deep_learning\Lib\site-packages\torch\utils\data\_utils\fetch.py", line 52, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+            ~~~~~~~~~~~~^^^^^
+  File "C:\Users\lvilo\OneDrive - Universite de Liege\Documents\Cours\Master 1\Deep learning\projet_tomate_pourrie\CNN.py", line 111, in __getitem__
+    encoding = self.tokenizer.encode(text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

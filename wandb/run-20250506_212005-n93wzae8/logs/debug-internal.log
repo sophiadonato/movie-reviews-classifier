@@ -1,0 +1,15 @@
+{"time":"2025-05-06T21:20:05.7727796+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\lvilo\\OneDrive - Universite de Liege\\Documents\\Cours\\Master 1\\Deep learning\\projet_tomate_pourrie\\wandb\\run-20250506_212005-n93wzae8\\logs\\debug-core.log"}
+{"time":"2025-05-06T21:20:06.2486688+02:00","level":"INFO","msg":"created new stream","id":"n93wzae8"}
+{"time":"2025-05-06T21:20:06.2486688+02:00","level":"INFO","msg":"stream: started","id":"n93wzae8"}
+{"time":"2025-05-06T21:20:06.2486688+02:00","level":"INFO","msg":"handler: started","stream_id":"n93wzae8"}
+{"time":"2025-05-06T21:20:06.2486688+02:00","level":"INFO","msg":"sender: started","stream_id":"n93wzae8"}
+{"time":"2025-05-06T21:20:06.2486688+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"n93wzae8"}
+{"time":"2025-05-06T21:20:06.4931095+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-06T21:50:36.4608085+02:00","level":"INFO","msg":"stream: closing","id":"n93wzae8"}
+{"time":"2025-05-06T21:50:36.4613475+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-06T21:50:36.4613475+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-06T21:50:37.1376232+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-06T21:50:37.6043561+02:00","level":"INFO","msg":"sender: closed","stream_id":"n93wzae8"}
+{"time":"2025-05-06T21:50:37.6043561+02:00","level":"INFO","msg":"handler: closed","stream_id":"n93wzae8"}
+{"time":"2025-05-06T21:50:37.6043561+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"n93wzae8"}
+{"time":"2025-05-06T21:50:37.6048962+02:00","level":"INFO","msg":"stream: closed","id":"n93wzae8"}
