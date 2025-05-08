@@ -2,6 +2,8 @@
 # 1. GPT-style models are made for generation, not classification
 # 2. GPT 2/3/4 better for classification then 7
 
+# Search about scheduling in chap 4 of deepLearning
+
 # ====================================== IMPORTS ======================================
 
 # Library torch imported to build and train a GPT model for sentiment analysis
@@ -25,6 +27,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from nltk.stem import WordNetLemmatizer
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 print("Imports done")
 
@@ -388,6 +391,9 @@ print("Model initialized")
 
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
+# Initialize the scheduler
+scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+
 best_validation_loss = float("inf")
 patience_counter = 0
 for i in range(max_iters + 1):
@@ -402,7 +408,8 @@ for i in range(max_iters + 1):
             "train_loss": results['train_loss'],
             "train_accuracy": results['train_accuracy'],
             "validation_loss": results['validation_loss'],
-            "validation_accuracy": results['validation_accuracy']
+            "validation_accuracy": results['validation_accuracy'],
+            "learning_rate": scheduler.get_last_lr()[0]
         })
 
         lm.train()
@@ -423,6 +430,7 @@ for i in range(max_iters + 1):
     loss = classification_loss(lm, x, y)
     loss.backward()
     optimizer.step()
+    scheduler.step()
 
     # Model save
     if i % save_every == 0:
