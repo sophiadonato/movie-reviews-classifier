@@ -122,14 +122,14 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex=T
 # stop words should not been removed
 
 # 4. Lemmatization to reduce words to their base form
-nltk.download('wordnet')
-lemmatizer = WordNetLemmatizer()
-dataSet['reviewText'] = dataSet['reviewText'].apply(
-    lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
-)
+# nltk.download('wordnet')
+# lemmatizer = WordNetLemmatizer()
+# dataSet['reviewText'] = dataSet['reviewText'].apply(
+#     lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
+# )
 
 # 5. Convert to lowercase
-# dataSet['reviewText'] = dataSet['reviewText'].str.lower()
+dataSet['reviewText'] = dataSet['reviewText'].str.lower()
 
 # 6. Remove extra spaces
 dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
