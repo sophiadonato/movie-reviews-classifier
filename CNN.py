@@ -37,8 +37,8 @@ sequence_length = 100
 batch_size = 32
 num_workers = 0
 
-learning_rate = 1e-3
-num_epochs = 50
+learning_rate = 1e-8
+num_epochs = 20
 
 input_features = sequence_length
 output_features = 2
@@ -104,7 +104,8 @@ dataSet = pd.read_csv(file_path)
 print("Dataset loaded")
 
 # Decreasing the size of the dataset to speed up the training process
-dataSet = dataSet.sample(frac=dataset_part, random_state=42)
+if dataset_part != 1:
+    dataSet = dataSet.sample(frac=dataset_part, random_state=42)
 
 print("Dataset size decreased")
 
