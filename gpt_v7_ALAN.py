@@ -51,10 +51,10 @@ block_size = 512
 n_embedding = 512
 # Having a minimum large nb of blocks and heads is important to capture
 # complex patterns in the data
-n_blocks = 8
+n_blocks = 12
 n_head = 8
 dropout = 0.2
-max_iters = 10000
+max_iters = 50000
 learning_rate = 1e-4
 eval_every = 500
 eval_iters = 200
