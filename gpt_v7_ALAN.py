@@ -33,6 +33,13 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from nltk.stem import WordNetLemmatizer
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.optim.lr_scheduler import StepLR
+from torch.optim.lr_scheduler import ExponentialLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import CyclicLR
+from torch.optim.lr_scheduler import OneCycleLR
+from torch.optim.lr_scheduler import LambdaLR
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 print("Imports done")
 
@@ -54,7 +61,7 @@ n_embedding = 512
 n_blocks = 12
 n_head = 8
 dropout = 0.2
-max_iters = 50000
+max_iters = 10000
 learning_rate = 1e-4
 eval_every = 500
 eval_iters = 200
