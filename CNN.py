@@ -38,7 +38,7 @@ batch_size = 32
 num_workers = 0
 
 learning_rate = 1e-3
-num_epochs = 20
+num_epochs = 200
 
 input_features = sequence_length
 output_features = 2
@@ -46,21 +46,23 @@ output_features = 2
 output_Features1 = 64
 output_Features2 = 256
 output_Features3 = 512
+output_Features4 = 1024
 kernel_size = 3
 
-output_Features_final = 512
+output_Features_final = 1024
 
-output_linear1 = 256
-output_linear2 = 128
-output_linear3 = 64
+output_linear1 = 512
+output_linear2 = 256
+output_linear3 = 128
+output_linear4 = 64
 
-number_of_conv_layers = 3
-number_of_linear_layers = 3
+number_of_conv_layers = 4
+number_of_linear_layers = 4
 
 eval_every = 1
 save_every = 10
 
-dataset_part = 0.50
+dataset_part = 1
 dropout = 0.2
 
 print("Hyperparameters done")
@@ -277,6 +279,9 @@ class CNN(nn.Sequential):
         self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, 3)
         self.reLU3 = nn.ReLU()
         self.maxPool1d3 = nn.MaxPool1d(2, stride=2)
+        self.conv1d4 = nn.Conv1d(output_Features3, output_Features4)
+        self.reLUConv4 = nn.ReLU()
+        self.maxPool1d4 = nn.MaxPool1d(2, stride=2)
         self.flatten1 = nn.Flatten()
         self.linear1 = nn.Linear(input_features * output_Features_final, output_linear1)
         self.reLU4 = nn.ReLU()
@@ -284,8 +289,10 @@ class CNN(nn.Sequential):
         self.reLU5 = nn.ReLU()
         self.linear3 = nn.Linear(output_linear2, output_linear3)
         self.reLU6 = nn.ReLU()
-        self.linear4 = nn.Linear(output_linear3, output_features)
-        self.dropout = nn.dropout(dropout)
+        self.linear4 = nn.Linear(output_linear3, output_linear4)
+        self.relU7 = nn.ReLU()
+        self.linear5 = nn.linear(output_linear4, output_features)
+        self.dropout = nn.Dropout(dropout)
 
 
     def forward(self, x):
@@ -300,6 +307,9 @@ class CNN(nn.Sequential):
         x = self.conv1d3(x)
         x = self.reLU3(x)
         x = self.maxPool1d3(x)
+        x = self.conv1d4(x)
+        x = self.reLUConv4(x)
+        x = self.maxPool1d4(x)
         x = self.flatten1(x)
         x = self.linear1(x)
         x = self.reLU4(x)
@@ -308,6 +318,8 @@ class CNN(nn.Sequential):
         x = self.linear3(x)
         x = self.reLU6(x)
         x = self.linear4(x)
+        x = self.relU7(x)
+        x = self.linear5(x)
         x = self.dropout(x)
         return x
 
