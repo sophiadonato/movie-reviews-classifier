@@ -37,7 +37,7 @@ sequence_length = 100
 batch_size = 32
 num_workers = 0
 
-learning_rate = 1e-8
+learning_rate = 1e-3
 num_epochs = 20
 
 input_features = sequence_length
@@ -60,7 +60,7 @@ number_of_linear_layers = 3
 eval_every = 1
 save_every = 10
 
-dataset_part = 0.10
+dataset_part = 0.50
 
 print("Hyperparameters done")
 
@@ -322,6 +322,10 @@ def train(num_epochs):
     test_accuracy = []
 
     for i in range(num_epochs + 1):
+        if i % 10 == 0:
+            learning_rate /= 2
+            optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
+
         print(f"Epoch number : {i+1}")
         if i % eval_every == 0:
             # Evaluation on the test set
