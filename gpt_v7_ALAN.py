@@ -404,7 +404,7 @@ print("Model initialized")
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
 # Initialize the scheduler
-scheduler = ExponentialLR(optimizer, gamma=0.95)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)
 
 best_validation_loss = float("inf")
 patience_counter = 0
@@ -421,7 +421,7 @@ for i in range(max_iters + 1):
             "train_accuracy": results['train_accuracy'],
             "validation_loss": results['validation_loss'],
             "validation_accuracy": results['validation_accuracy'],
-            "learning_rate": scheduler.get_last_lr()[0]        })
+            "learning_rate": optimizer.param_groups[0]['lr']        })
 
         lm.train()
 
@@ -441,7 +441,7 @@ for i in range(max_iters + 1):
     loss = classification_loss(lm, x, y)
     loss.backward()
     optimizer.step()
-    scheduler.step()
+    scheduler.step(results['validation_loss'])
 
     # Model save
     if i % save_every == 0:
