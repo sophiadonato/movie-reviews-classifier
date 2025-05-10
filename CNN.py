@@ -61,6 +61,7 @@ eval_every = 1
 save_every = 10
 
 dataset_part = 0.50
+dropout = 0.2
 
 print("Hyperparameters done")
 
@@ -74,24 +75,25 @@ print("Checkpoints done")
 
 # ====================================== WAND B ======================================
 wandb.init(
-        project="CNN",
-        config={
-            "model": model_name,
-            "batch_size": batch_size,
-            "vocab_n": vocab_n,
-            "sequence_legth": sequence_length,
-            "num_workers": num_workers,
-            "learning_rate": learning_rate,
-            "num_epochs": num_epochs,
+    project="CNN",
+    config={
+        "model": model_name,
+        "batch_size": batch_size,
+        "vocab_n": vocab_n,
+        "sequence_legth": sequence_length,
+        "num_workers": num_workers,
+        "learning_rate": learning_rate,
+        "num_epochs": num_epochs,
 
-            "number of conv layers": number_of_conv_layers,
-            "kernel size": kernel_size,
-            "number of linear layers": number_of_linear_layers,
+        "number of conv layers": number_of_conv_layers,
+        "kernel size": kernel_size,
+        "number of linear layers": number_of_linear_layers,
 
-            "eval_every": eval_every,
-            "part of the dataset": dataset_part,
-            }
-        )
+        "eval_every": eval_every,
+        "part of the dataset": dataset_part,
+        "dropout": dropout,
+    }
+)
 
 print("WandB done")
 
@@ -283,6 +285,7 @@ class CNN(nn.Sequential):
         self.linear3 = nn.Linear(output_linear2, output_linear3)
         self.reLU6 = nn.ReLU()
         self.linear4 = nn.Linear(output_linear3, output_features)
+        self.dropout = nn.dropout(dropout)
 
 
     def forward(self, x):
@@ -305,6 +308,7 @@ class CNN(nn.Sequential):
         x = self.linear3(x)
         x = self.reLU6(x)
         x = self.linear4(x)
+        x = self.dropout(x)
         return x
 
 network = CNN()
@@ -316,7 +320,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
 
 print(f"Parameters: {sum(p.numel() for p in network.parameters())/1e6} M parameters")
-def train(num_epochs):
+def train(num_epochs, learning_rate):
     train_avg_loss = []
     test_avg_loss = []
     test_accuracy = []
@@ -362,6 +366,6 @@ def train(num_epochs):
     return train_avg_loss, test_avg_loss, test_accuracy
 
 
-train_avg_loss, test_avg_loss, test_accuracy = train(num_epochs)
+train_avg_loss, test_avg_loss, test_accuracy = train(num_epochs, learning_rate)
 print("Training done")
 
