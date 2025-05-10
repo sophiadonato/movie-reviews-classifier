@@ -61,7 +61,7 @@ n_embedding = 512
 n_blocks = 12
 n_head = 8
 dropout = 0.2
-max_iters = 10000
+max_iters = 50000
 learning_rate = 1e-4
 eval_every = 500
 eval_iters = 200
@@ -404,7 +404,7 @@ print("Model initialized")
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
 # Initialize the scheduler
-scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+scheduler = StepLR(optimizer, step_size=1000, gamma=0.1)
 
 best_validation_loss = float("inf")
 patience_counter = 0
@@ -421,8 +421,7 @@ for i in range(max_iters + 1):
             "train_accuracy": results['train_accuracy'],
             "validation_loss": results['validation_loss'],
             "validation_accuracy": results['validation_accuracy'],
-            "learning_rate": scheduler.get_last_lr()[0]
-        })
+            "learning_rate": scheduler.get_last_lr()[0]        })
 
         lm.train()
 
