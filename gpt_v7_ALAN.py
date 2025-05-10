@@ -404,7 +404,7 @@ print("Model initialized")
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
 # Initialize the scheduler
-scheduler = StepLR(optimizer, step_size=1000, gamma=0.1)
+scheduler = ExponentialLR(optimizer, gamma=0.95)
 
 best_validation_loss = float("inf")
 patience_counter = 0
