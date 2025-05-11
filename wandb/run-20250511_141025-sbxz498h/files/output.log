@@ -1,0 +1,19 @@
+Parameters: 1602.705 K parameters
+0
+Step 0 : Train accuracy 0.3294, Validation accuracy 0.3300
+1
+Step 1 : Train accuracy 0.6706, Validation accuracy 0.6700
+2
+Step 2 : Train accuracy 0.6706, Validation accuracy 0.6700
+3
+Step 3 : Train accuracy 0.6706, Validation accuracy 0.6700
+4
+Step 4 : Train accuracy 0.6706, Validation accuracy 0.6700
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v5.py", line 159, in <module>
+    batch_X, batch_y = batch_X.to(device), batch_y.to(device)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v5.py", line 159, in <module>
+    batch_X, batch_y = batch_X.to(device), batch_y.to(device)
+KeyboardInterrupt

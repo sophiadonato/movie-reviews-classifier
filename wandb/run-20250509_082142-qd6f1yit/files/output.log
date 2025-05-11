@@ -1,0 +1,68 @@
+Parameters: 161.649 K parameters
+0
+Step 0 : Train accuracy 0.6706, Validation accuracy 0.6700
+1
+2
+3
+4
+5
+6
+7
+8
+Step 8 : Train accuracy 0.8429, Validation accuracy 0.8256
+9
+10
+11
+12
+13
+14
+15
+16
+Step 16 : Train accuracy 0.8555, Validation accuracy 0.8225
+17
+18
+19
+20
+21
+22
+23
+24
+Step 24 : Train accuracy 0.8610, Validation accuracy 0.8186
+25
+26
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v3.py", line 148, in <module>
+    for batch_X, batch_y in trainloader:
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataloader.py", line 733, in __next__
+    data = self._next_data()
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataloader.py", line 789, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\_utils\fetch.py", line 50, in fetch
+    data = self.dataset.__getitems__(possibly_batched_index)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 416, in __getitems__
+    return [self.dataset[self.indices[idx]] for idx in indices]
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 416, in <listcomp>
+    return [self.dataset[self.indices[idx]] for idx in indices]
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 207, in __getitem__
+    return tuple(tensor[index] for tensor in self.tensors)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 207, in <genexpr>
+    return tuple(tensor[index] for tensor in self.tensors)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v3.py", line 148, in <module>
+    for batch_X, batch_y in trainloader:
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataloader.py", line 733, in __next__
+    data = self._next_data()
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataloader.py", line 789, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\_utils\fetch.py", line 50, in fetch
+    data = self.dataset.__getitems__(possibly_batched_index)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 416, in __getitems__
+    return [self.dataset[self.indices[idx]] for idx in indices]
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 416, in <listcomp>
+    return [self.dataset[self.indices[idx]] for idx in indices]
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 207, in __getitem__
+    return tuple(tensor[index] for tensor in self.tensors)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\utils\data\dataset.py", line 207, in <genexpr>
+    return tuple(tensor[index] for tensor in self.tensors)
+KeyboardInterrupt

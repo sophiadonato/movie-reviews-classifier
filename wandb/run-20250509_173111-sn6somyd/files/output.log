@@ -1,0 +1,99 @@
+Parameters: 161.649 K parameters
+0
+Step 0 : Train accuracy 0.6706, Validation accuracy 0.6700
+1
+2
+Step 2 : Train accuracy 0.8094, Validation accuracy 0.8071
+3
+4
+Step 4 : Train accuracy 0.8149, Validation accuracy 0.8122
+5
+6
+Step 6 : Train accuracy 0.8186, Validation accuracy 0.8156
+7
+8
+Step 8 : Train accuracy 0.8207, Validation accuracy 0.8168
+9
+10
+Step 10 : Train accuracy 0.8209, Validation accuracy 0.8177
+11
+12
+Step 12 : Train accuracy 0.8165, Validation accuracy 0.8131
+13
+14
+Step 14 : Train accuracy 0.8217, Validation accuracy 0.8182
+15
+16
+Step 16 : Train accuracy 0.8200, Validation accuracy 0.8158
+17
+18
+Step 18 : Train accuracy 0.8228, Validation accuracy 0.8189
+19
+20
+Step 20 : Train accuracy 0.8231, Validation accuracy 0.8192
+21
+22
+Step 22 : Train accuracy 0.8207, Validation accuracy 0.8169
+23
+24
+Step 24 : Train accuracy 0.8224, Validation accuracy 0.8180
+25
+26
+Step 26 : Train accuracy 0.8209, Validation accuracy 0.8165
+27
+28
+Step 28 : Train accuracy 0.8229, Validation accuracy 0.8196
+29
+30
+Step 30 : Train accuracy 0.8177, Validation accuracy 0.8140
+31
+32
+Step 32 : Train accuracy 0.8219, Validation accuracy 0.8179
+33
+34
+Step 34 : Train accuracy 0.8223, Validation accuracy 0.8181
+35
+36
+Step 36 : Train accuracy 0.8193, Validation accuracy 0.8156
+37
+38
+Step 38 : Train accuracy 0.8194, Validation accuracy 0.8156
+39
+40
+Step 40 : Train accuracy 0.8231, Validation accuracy 0.8191
+41
+42
+Step 42 : Train accuracy 0.8234, Validation accuracy 0.8198
+43
+44
+Step 44 : Train accuracy 0.8240, Validation accuracy 0.8198
+45
+46
+Step 46 : Train accuracy 0.8232, Validation accuracy 0.8191
+47
+48
+Step 48 : Train accuracy 0.8197, Validation accuracy 0.8154
+49
+50
+Step 50 : Train accuracy 0.8237, Validation accuracy 0.8199
+51
+52
+Step 52 : Train accuracy 0.8246, Validation accuracy 0.8210
+53
+54
+Step 54 : Train accuracy 0.8245, Validation accuracy 0.8206
+55
+56
+Step 56 : Train accuracy 0.8242, Validation accuracy 0.8194
+57
+58
+Step 58 : Train accuracy 0.8239, Validation accuracy 0.8199
+59
+60
+Step 60 : Train accuracy 0.8200, Validation accuracy 0.8162
+61
+62
+Step 62 : Train accuracy 0.8201, Validation accuracy 0.8160
+63
+64
+Step 64 : Train accuracy 0.8235, Validation accuracy 0.8192
