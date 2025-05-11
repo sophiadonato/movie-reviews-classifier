@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\evaluation_v4.py", line 118, in <module>
+    new_reviews_seq = tokenizer.texts_to_sequences(new_reviews.apply(clean_text))
+AttributeError: 'list' object has no attribute 'apply'
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\evaluation_v4.py", line 118, in <module>
+    new_reviews_seq = tokenizer.texts_to_sequences(new_reviews.apply(clean_text))
+AttributeError: 'list' object has no attribute 'apply'

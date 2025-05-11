@@ -1,0 +1,15 @@
+{"time":"2025-05-11T17:16:51.4379174+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\wandb\\run-20250511_171651-rqzl6542\\logs\\debug-core.log"}
+{"time":"2025-05-11T17:16:52.2244978+02:00","level":"INFO","msg":"created new stream","id":"rqzl6542"}
+{"time":"2025-05-11T17:16:52.2246061+02:00","level":"INFO","msg":"stream: started","id":"rqzl6542"}
+{"time":"2025-05-11T17:16:52.2246492+02:00","level":"INFO","msg":"handler: started","stream_id":"rqzl6542"}
+{"time":"2025-05-11T17:16:52.2246492+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"rqzl6542"}
+{"time":"2025-05-11T17:16:52.2246492+02:00","level":"INFO","msg":"sender: started","stream_id":"rqzl6542"}
+{"time":"2025-05-11T17:16:52.5575141+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-11T17:16:53.8934932+02:00","level":"INFO","msg":"stream: closing","id":"rqzl6542"}
+{"time":"2025-05-11T17:16:53.8935377+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-11T17:16:53.8935377+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-11T17:16:54.8821474+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-11T17:16:55.1619727+02:00","level":"INFO","msg":"handler: closed","stream_id":"rqzl6542"}
+{"time":"2025-05-11T17:16:55.1619727+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"rqzl6542"}
+{"time":"2025-05-11T17:16:55.1619727+02:00","level":"INFO","msg":"sender: closed","stream_id":"rqzl6542"}
+{"time":"2025-05-11T17:16:55.1626123+02:00","level":"INFO","msg":"stream: closed","id":"rqzl6542"}

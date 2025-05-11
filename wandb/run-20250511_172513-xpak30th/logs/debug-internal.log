@@ -1,0 +1,15 @@
+{"time":"2025-05-11T17:25:13.2160977+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\wandb\\run-20250511_172513-xpak30th\\logs\\debug-core.log"}
+{"time":"2025-05-11T17:25:13.6066013+02:00","level":"INFO","msg":"created new stream","id":"xpak30th"}
+{"time":"2025-05-11T17:25:13.6068177+02:00","level":"INFO","msg":"stream: started","id":"xpak30th"}
+{"time":"2025-05-11T17:25:13.6070184+02:00","level":"INFO","msg":"handler: started","stream_id":"xpak30th"}
+{"time":"2025-05-11T17:25:13.6070665+02:00","level":"INFO","msg":"sender: started","stream_id":"xpak30th"}
+{"time":"2025-05-11T17:25:13.6070665+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"xpak30th"}
+{"time":"2025-05-11T17:25:13.8945738+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-11T17:25:15.2449924+02:00","level":"INFO","msg":"stream: closing","id":"xpak30th"}
+{"time":"2025-05-11T17:25:15.2449924+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-11T17:25:15.2449924+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-11T17:25:16.8716635+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-11T17:25:17.122801+02:00","level":"INFO","msg":"handler: closed","stream_id":"xpak30th"}
+{"time":"2025-05-11T17:25:17.1230213+02:00","level":"INFO","msg":"sender: closed","stream_id":"xpak30th"}
+{"time":"2025-05-11T17:25:17.1229658+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"xpak30th"}
+{"time":"2025-05-11T17:25:17.1234655+02:00","level":"INFO","msg":"stream: closed","id":"xpak30th"}
