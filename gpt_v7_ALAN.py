@@ -404,7 +404,14 @@ print("Model initialized")
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
 # Initialize the scheduler
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)
+scheduler = CyclicLR(
+    optimizer,
+    base_lr=1e-5,      # learning rate minimum
+    max_lr=1e-3,       # learning rate maximum
+    step_size_up=2000, # iteration nb to increase LR
+    mode='triangular',
+    cycle_momentum=False
+)
 
 best_validation_loss = float("inf")
 patience_counter = 0
@@ -441,7 +448,7 @@ for i in range(max_iters + 1):
     loss = classification_loss(lm, x, y)
     loss.backward()
     optimizer.step()
-    scheduler.step(results['validation_loss'])
+    scheduler.step()
 
     # Model save
     if i % save_every == 0:
