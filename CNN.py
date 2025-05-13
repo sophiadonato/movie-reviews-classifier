@@ -47,7 +47,7 @@ output_Features1 = 64
 output_Features2 = 256
 output_Features3 = 512
 output_Features4 = 1024
-kernel_size = 3
+kernel_size = 4
 
 output_Features_final = 1024
 
@@ -270,16 +270,16 @@ class CNN(nn.Sequential):
     def __init__(self):
         super().__init__()
         self.embedding1 = nn.Embedding(vocab_n, 15)
-        self.conv1d1 = nn.Conv1d(15, output_Features1, 3)
+        self.conv1d1 = nn.Conv1d(15, output_Features1, kernel_size)
         self.reLU1 = nn.ReLU()
         self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
-        self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, 3)
+        self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, kernel_size)
         self.reLU2 = nn.ReLU()
         self.maxPool1d2 = nn.MaxPool1d(2, stride=2)
-        self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, 3)
+        self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, kernel_size)
         self.reLU3 = nn.ReLU()
         self.maxPool1d3 = nn.MaxPool1d(2, stride=2)
-        self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, 3)
+        self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, kernel_size)
         self.reLUConv4 = nn.ReLU()
         self.maxPool1d4 = nn.MaxPool1d(2, stride=2)
         self.flatten1 = nn.Flatten()
