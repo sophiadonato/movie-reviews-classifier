@@ -47,17 +47,25 @@ output_Features1 = 64
 output_Features2 = 256
 output_Features3 = 512
 output_Features4 = 1024
-kernel_size = 4
+output_Features5 = 2048
+output_Features6 = 4096
+output_Features7 = 8192
+output_Features8 = 16384
+kernel_size = 3
 
-output_Features_final = 1024
+output_Features_final = 16384
 
-output_linear1 = 512
-output_linear2 = 256
-output_linear3 = 128
-output_linear4 = 64
+output_linear1 = 8192
+output_linear2 = 4096
+output_linear3 = 2048
+output_linear4 = 1024
+output_linear5 = 512
+output_linear6 = 256
+output_linear7 = 128
+output_linear8 = 64
 
-number_of_conv_layers = 4
-number_of_linear_layers = 4
+number_of_conv_layers = 8
+number_of_linear_layers = 8
 
 eval_every = 1
 save_every = 10
@@ -235,7 +243,7 @@ def get_batch(data, labels):
 
 
 for i in range(number_of_conv_layers):
-    input_features = (input_features - 2) // 2
+    input_features = (input_features - kernel_size + 1) // 2
 
 @torch.no_grad()
 def evaluate(model, train_loader, validation_loader, criterion):
@@ -271,27 +279,47 @@ class CNN(nn.Sequential):
         super().__init__()
         self.embedding1 = nn.Embedding(vocab_n, 15)
         self.conv1d1 = nn.Conv1d(15, output_Features1, kernel_size)
-        self.reLU1 = nn.ReLU()
+        self.reLUConv1 = nn.ReLU()
         self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
         self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, kernel_size)
-        self.reLU2 = nn.ReLU()
+        self.reLUConv2 = nn.ReLU()
         self.maxPool1d2 = nn.MaxPool1d(2, stride=2)
         self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, kernel_size)
-        self.reLU3 = nn.ReLU()
+        self.reLUConv3 = nn.ReLU()
         self.maxPool1d3 = nn.MaxPool1d(2, stride=2)
         self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, kernel_size)
         self.reLUConv4 = nn.ReLU()
         self.maxPool1d4 = nn.MaxPool1d(2, stride=2)
+        self.conv1d5 = nn.Conv1d(output_Features4, output_Features5, kernel_size)
+        self.reLUConv5 = nn.ReLU()
+        self.maxPool1d5 = nn.MaxPool1d(2, stride=2)
+        self.conv1d6 = nn.Conv1d(output_Features5, output_Features6, kernel_size)
+        self.reLUConv6 = nn.ReLU()
+        self.maxPool1d6 = nn.MaxPool1d(2, stride=2)
+        self.conv1d7 = nn.Conv1d(output_Features6, output_Features7, kernel_size)
+        self.reLUConv7 = nn.ReLU()
+        self.maxPool1d7 = nn.MaxPool1d(2, stride=2)
+        self.conv1d8 = nn.Conv1d(output_Features7, output_Features8, kernel_size)
+        self.reLUConv8 = nn.ReLU()
+        self.maxPool1d8 = nn.MaxPool1d(2, stride=2)
         self.flatten1 = nn.Flatten()
+
         self.linear1 = nn.Linear(input_features * output_Features_final, output_linear1)
-        self.reLU4 = nn.ReLU()
+        self.reLULinear1 = nn.ReLU()
         self.linear2 = nn.Linear(output_linear1, output_linear2)
-        self.reLU5 = nn.ReLU()
+        self.reLULinear2 = nn.ReLU()
         self.linear3 = nn.Linear(output_linear2, output_linear3)
-        self.reLU6 = nn.ReLU()
+        self.reLULinear3 = nn.ReLU()
         self.linear4 = nn.Linear(output_linear3, output_linear4)
-        self.relU7 = nn.ReLU()
-        self.linear5 = nn.Linear(output_linear4, output_features)
+        self.reLULinear4 = nn.ReLU()
+        self.linear5 = nn.Linear(output_linear4, output_linear5)
+        self.linear6 = nn.Linear(output_linear5, output_linear6)
+        self.reLULinear6 = nn.ReLU()
+        self.linear7 = nn.Linear(output_linear6, output_linear7)
+        self.reLULinear7 = nn.ReLU()
+        self.linear8 = nn.Linear(output_linear7, output_linear8)
+        self.reLULinear8 = nn.ReLU()
+        self.linear9 = nn.Linear(output_linear8, output_features)
         self.dropout = nn.Dropout(dropout)
 
 
@@ -299,27 +327,47 @@ class CNN(nn.Sequential):
         x = self.embedding1(x)
         x = x.view(x.shape[0], 15, 100)
         x = self.conv1d1(x)
-        x = self.reLU1(x)
+        x = self.reLUConv1(x)
         x = self.maxPool1d1(x)
         x = self.conv1d2(x)
-        x = self.reLU2(x)
+        x = self.reLUConv2(x)
         x = self.maxPool1d2(x)
         x = self.conv1d3(x)
-        x = self.reLU3(x)
+        x = self.reLUConv3(x)
         x = self.maxPool1d3(x)
         x = self.conv1d4(x)
         x = self.reLUConv4(x)
         x = self.maxPool1d4(x)
+        x = self.conv1d5(x)
+        x = self.reLUConv5(x)
+        x = self.maxPool1d5(x)
+        x = self.conv1d6(x)
+        x = self.reLUConv6(x)
+        x = self.maxPool1d6(x)
+        x = self.conv1d7(x)
+        x = self.reLUConv7(x)
+        x = self.maxPool1d7(x)
+        x = self.conv1d8(x)
+        x = self.reLUConv8(x)
+        x = self.maxPool1d8(x)
         x = self.flatten1(x)
+
         x = self.linear1(x)
-        x = self.reLU4(x)
+        x = self.reLULinear1(x)
         x = self.linear2(x)
-        x = self.reLU5(x)
+        x = self.reLULinear2(x)
         x = self.linear3(x)
-        x = self.reLU6(x)
+        x = self.reLULinear3(x)
         x = self.linear4(x)
-        x = self.relU7(x)
+        x = self.reLULinear4(x)
         x = self.linear5(x)
+        x = self.linear6(x)
+        x = self.reLULinear6(x)
+        x = self.linear7(x)
+        x = self.reLULinear7(x)
+        x = self.linear8(x)
+        x = self.reLULinear8(x)
+        x = self.linear9(x)
         x = self.dropout(x)
         return x
 
