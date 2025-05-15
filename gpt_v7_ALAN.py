@@ -245,7 +245,9 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embedding, head_size, bias=False)
         self.query = nn.Linear(n_embedding, head_size, bias=False)
         self.value = nn.Linear(n_embedding, head_size, bias=False)
-        self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
+        # The lower triangular matrix is used to mask future tokens in the attention mechanism
+        # In classification, we do not need to mask future tokens
+        # self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
@@ -258,7 +260,8 @@ class Head(nn.Module):
         # attention scores are the measure of how much focus each token should have on other tokens in the sequence
         # attention scores are computed by taking the dot product of the query and key vectors
         wei = q @ k.transpose(-1, -2) * H**-0.5 # (B, T, H) @ (B, H, T) -> (B, T, T)
-        wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf")) # (B, T, T)
+        # Masking future tokens is not needed for classification
+        # wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf")) # (B, T, T)
         wei = F.softmax(wei, dim=-1) # (B, T, T)
         wei = self.dropout(wei)
 
@@ -404,14 +407,8 @@ print("Model initialized")
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
 # Initialize the scheduler
-scheduler = CyclicLR(
-    optimizer,
-    base_lr=1e-5,      # learning rate minimum
-    max_lr=1e-3,       # learning rate maximum
-    step_size_up=2000, # iteration nb to increase LR
-    mode='triangular',
-    cycle_momentum=False
-)
+scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+
 
 best_validation_loss = float("inf")
 patience_counter = 0
@@ -428,7 +425,7 @@ for i in range(max_iters + 1):
             "train_accuracy": results['train_accuracy'],
             "validation_loss": results['validation_loss'],
             "validation_accuracy": results['validation_accuracy'],
-            "learning_rate": optimizer.param_groups[0]['lr']        })
+            "learning_rate": scheduler.get_last_lr()[0]        })
 
         lm.train()
 
