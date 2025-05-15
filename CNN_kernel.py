@@ -235,7 +235,7 @@ def get_batch(data, labels):
 
 
 for i in range(number_of_conv_layers):
-    input_features = (input_features - 2) // 2
+    input_features = (input_features - kernel_size + 1) // 2
 
 @torch.no_grad()
 def evaluate(model, train_loader, validation_loader, criterion):
