@@ -5,7 +5,7 @@
 # Search about scheduling in chap 4 of deepLearning
 # Search about warm up
 # Mixed Precision Training
-# Weight Decay
+# weightght Decay
 # Data augmentation
 # Adjust dynamically batch size
 
@@ -248,26 +248,43 @@ class Head(nn.Module):
         # The lower triangular matrix is used to mask future tokens in the attention mechanism
         # In classification, we do not need to mask future tokens
         # self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
+
+        # Relative positional encoding is used to capture the relative positions of tokens in the sequence
+        self.rel_pos = RelativePositionalEncoding(head_size, max_len=max_seq_len)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
         B, T, C = x.shape
         k = self.key(x) # (B, T, H)
         q = self.query(x) # (B, T, H)
+        v = self.value(x)  # [B, T, H]
         H = k.shape[-1]
 
-        # compute attention scores (affinities)
-        # attention scores are the measure of how much focus each token should have on other tokens in the sequence
-        # attention scores are computed by taking the dot product of the query and key vectors
-        wei = q @ k.transpose(-1, -2) * H**-0.5 # (B, T, H) @ (B, H, T) -> (B, T, T)
-        # Masking future tokens is not needed for classification
-        # wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf")) # (B, T, T)
-        wei = F.softmax(wei, dim=-1) # (B, T, T)
-        wei = self.dropout(wei)
-
-        # weighted aggregation of the values
-        v = self.value(x) # (B, T, H)
-        h = wei @ v # (B, T, T) @ (B, T, H) -> (B, T, H)
+        # Compute the relative positions between each pair of tokens
+        positions = torch.arange(T, device=x.device)
+        relative_position_matrix = positions.unsqueeze(1) - positions.unsqueeze(0)  # [T, T]
+        
+        # Retrieve the embeddings corresponding to these relative positions
+        relative_position_embeddings = self.rel_pos.get_rel_embedding(relative_position_matrix)  # [T, T, H]
+        
+        # Content-based attention scores 
+        content_score = q @ k.transpose(-2, -1)  # [B, T, T]
+        
+        # Attention scores based on relative position
+        # Combine queries with relative positional embeddings
+        # The einsum operation performs an intelligent tensor contraction
+        relative_position_score = torch.einsum('bth,ijh->btij', q, relative_position_embeddings)  # [B, T, T]
+        relative_position_score = relative_position_score.diagonal(dim1=-2, dim2=-1).transpose(-2, -1)  # [B, T, T]
+        
+        # Combine information from token and relative position scores
+        weight = (content_score + relative_position_score) * H**-0.5
+        
+        # Softmax and dropout
+        weight = F.softmax(weight, dim=-1)  # [B, T, T]
+        weight = self.dropout(weight)
+        
+        # Value-weightghted attention
+        h = weight @ v  # [B, T, T] @ [B, T, H] -> [B, T, H]
 
         return h
 
@@ -277,7 +294,7 @@ class MuliHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
         super().__init__()
         self.heads = nn.ModuleList([Head(head_size) for _ in range(n_heads)])
-        self.proj = nn.Linear(n_embedding, n_embedding)
+        self.proj = nn.Linear(head_size * n_heads, n_embedding)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
@@ -318,6 +335,20 @@ class Block(nn.Module):
         h = h + self.ff(self.ln2(h))
         return h
 
+# Class RelativePositionalEncoding implementation
+# The RelativePositionalEncoding class is used to encode relative positions in the input sequence    
+class RelativePositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=128):
+        super().__init__()
+        # For a max_len length sequence, we need to represent
+        # all possible relative distances: from -(max_len-1) to +(max_len-1)
+        self.rel_embeddings = nn.Parameter(torch.randn(2*max_len-1, d_model) * 0.02)
+        self.max_len = max_len
+        
+    def get_rel_embedding(self, relative_positions):
+        shifted_positions = relative_positions + self.max_len - 1
+        return self.rel_embeddings[shifted_positions]
+
 # Class GPTSentimentAnalysisModel implementation
 # The GPTSentimentAnalysisModel class is the main model for sentiment analysis
 class GPTSentimentAnalysisModel(nn.Module):
@@ -325,8 +356,9 @@ class GPTSentimentAnalysisModel(nn.Module):
         super().__init__()
         # token embedding table converts token indices to embeddings
         self.token_embedding_table = nn.Embedding(num_words, n_embedding)
+        # No more position embedding table is used in this model
         # position embedding table converts position indices to embeddings
-        self.position_embedding_table = nn.Embedding(block_size, n_embedding)
+        # self.position_embedding_table = nn.Embedding(block_size, n_embedding)
         # stack of transformer blocks to process the input
         self.blocks = nn.Sequential(*[Block(n_embedding, n_head) for _ in range(n_blocks)])
         self.ln_f = nn.LayerNorm(n_embedding)
@@ -337,11 +369,12 @@ class GPTSentimentAnalysisModel(nn.Module):
         B, T = x.shape
 
         # Tokens (x) are converted to embeddings vectors (tok_emb)
-        tok_emb = self.token_embedding_table(x)  # (B, T, C)
+        h = self.token_embedding_table(x)  # (B, T, C)
+        # No position embeddings are used in this model
         # Position (0, 1, 2, ..., T-1) are converted to embeddings vectors (pos_emb)
-        pos_emb = self.position_embedding_table(torch.arange(T, device=device))  # (T, C)
+        # pos_emb = self.position_embedding_table(torch.arange(T, device=device))  # (T, C)
         # The token embeddings and position embeddings are summed together to form the input to the transformer blocks
-        h = tok_emb + pos_emb  # (B, T, C)
+        # h = tok_emb + pos_emb  # (B, T, C)
         # The input is passed through the transformer blocks
         h = self.blocks(h)
         # The final layer normalization is applied to the output of the transformer blocks
@@ -438,6 +471,10 @@ for i in range(max_iters + 1):
         else:
             patience_counter += 1
             print(f"Validation loss did not improve. Patience counter: {patience_counter}/{patience}")
+
+            if (patience_counter >= patience):
+                print("Early stopping triggered. Stopping training.")
+                break
 
     # Training
     optimizer.zero_grad()
