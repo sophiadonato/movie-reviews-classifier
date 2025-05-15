@@ -37,7 +37,7 @@ sequence_length = 100
 batch_size = 32
 num_workers = 0
 
-learning_rate = 1e-3
+learning_rate = 1e-2
 num_epochs = 200
 
 input_features = sequence_length
@@ -53,7 +53,7 @@ output_Features7 = 8192
 output_Features8 = 16384
 kernel_size = 3
 
-output_Features_final = 4096
+output_Features_final = 2048
 
 output_linear1 = 8192
 output_linear2 = 4096
@@ -64,7 +64,7 @@ output_linear6 = 256
 output_linear7 = 128
 output_linear8 = 64
 
-number_of_conv_layers = 6
+number_of_conv_layers = 5
 number_of_linear_layers = 8
 
 eval_every = 1
@@ -293,9 +293,6 @@ class CNN(nn.Sequential):
         self.conv1d5 = nn.Conv1d(output_Features4, output_Features5, kernel_size)
         self.reLUConv5 = nn.ReLU()
         self.maxPool1d5 = nn.MaxPool1d(2, stride=2)
-        self.conv1d6 = nn.Conv1d(output_Features5, output_Features6, kernel_size)
-        self.reLUConv6 = nn.ReLU()
-        self.maxPool1d6 = nn.MaxPool1d(2, stride=2)
         self.flatten1 = nn.Flatten()
 
         self.linear1 = nn.Linear(input_features * output_Features_final, output_linear1)
@@ -335,9 +332,6 @@ class CNN(nn.Sequential):
         x = self.conv1d5(x)
         x = self.reLUConv5(x)
         x = self.maxPool1d5(x)
-        x = self.conv1d6(x)
-        x = self.reLUConv6(x)
-        x = self.maxPool1d6(x)
         x = self.flatten1(x)
 
         x = self.linear1(x)
