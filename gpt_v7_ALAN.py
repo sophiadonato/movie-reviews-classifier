@@ -489,13 +489,3 @@ for i in range(max_iters + 1):
         torch.save(lm.state_dict(), checkpoint)
 
 print("Training done")
-
-# ====================================== FINAL EVALUATION ======================================
-
-# from sklearn.metrics import classification_report
-
-# lm.eval()
-# with torch.no_grad():
-#     logits = lm(torch.stack(test_reviews))
-#     predictions = torch.argmax(logits, dim=1)
-#     print(classification_report(test_labels.cpu(), predictions.cpu(), target_names=["NEGATIVE", "POSITIVE"]))
