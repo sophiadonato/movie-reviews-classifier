@@ -331,8 +331,8 @@ class Block(nn.Module):
 
     def forward(self, x):
         h = x
-        h = h + self.sa(self.ln1(h))
-        h = h + self.ff(self.ln2(h))
+        h = self.ln1(h + self.sa(h))
+        h = self.ln2(h + self.ff(h))
         return h
 
 # Class RelativePositionalEncoding implementation
