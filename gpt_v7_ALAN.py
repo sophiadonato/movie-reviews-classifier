@@ -68,7 +68,6 @@ eval_iters = 200
 save_every = 1000
 num_words = 50000
 max_seq_len = 128
-patience = 20
 
 print("Hyperparameters done")
 
@@ -442,9 +441,6 @@ print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters'
 # Initialize the scheduler
 scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
 
-
-best_validation_loss = float("inf")
-patience_counter = 0
 for i in range(max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
@@ -461,20 +457,6 @@ for i in range(max_iters + 1):
             "learning_rate": scheduler.get_last_lr()[0]        })
 
         lm.train()
-
-        # Early stopping check
-        if results['validation_loss'] < best_validation_loss:
-            best_validation_loss = results['validation_loss']
-            patience_counter = 0  # Reinitialize the patience counter
-            # Save the best model
-            torch.save(lm.state_dict(), f"{checkpoint}_best")
-        else:
-            patience_counter += 1
-            print(f"Validation loss did not improve. Patience counter: {patience_counter}/{patience}")
-
-            if (patience_counter >= patience):
-                print("Early stopping triggered. Stopping training.")
-                break
 
     # Training
     optimizer.zero_grad()
