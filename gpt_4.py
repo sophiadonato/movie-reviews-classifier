@@ -1,5 +1,5 @@
 # Sentiment Analysis using GPT Model with 
-# - Bidirectional attention
+# - Causal attention
 # - Absolute positional encoding
 # - Pre-normalization
 
