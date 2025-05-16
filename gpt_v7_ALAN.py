@@ -68,7 +68,7 @@ eval_iters = 200
 save_every = 1000
 num_words = 50000
 max_seq_len = 128
-patience = 5
+patience = 20
 
 print("Hyperparameters done")
 
