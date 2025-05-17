@@ -40,7 +40,7 @@ num_workers = 0
 learning_rate = 1e-5
 num_epochs = 200
 
-input_dim = 1
+input_dim = 15
 hidden_dim = 100
 layer_dim = 1
 output_dim = 2
@@ -257,7 +257,7 @@ class LSTMModel(nn.Module):
         self.hidden_dim = hidden_dim
         self.layer_dim = layer_dim
 
-        # self.embedding = nn.Embedding(vocab_n, 15)
+        self.embedding = nn.Embedding(vocab_n, input_dim)
         self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True)
         self.fc = nn.Linear(hidden_dim, output_dim)
 
@@ -266,6 +266,7 @@ class LSTMModel(nn.Module):
         x = x.to(torch.float32)
         x = x.unsqueeze(-1)
 
+        x = self.embedding(x)
         out, (hn, cn) = self.lstm(x)
         out = out[:, -1, :]
         out = self.fc(out)
