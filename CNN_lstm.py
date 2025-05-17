@@ -253,7 +253,16 @@ def evaluate(model, train_loader, validation_loader, criterion):
             total_loss += loss.item()
 
             # Convertir les logits en prédictions de classe
-            predictions = torch.argmax(logits, dim=1)
+            # predictions = torch.argmax(logits, dim=1)
+            predictions = np.zeros(logits.shape)
+            i = 0
+            for prediction in logits:
+                if prediction >= 0.5:
+                    predictions[i] = 1
+                else:
+                    predictions[i] = 0
+                i += 1
+
             total_correct += (predictions == y).sum().item()
             total_samples += y.size(0)
 
