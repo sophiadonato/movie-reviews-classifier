@@ -47,7 +47,7 @@ hidden_dim3 = 512
 linear_layer1 = 256
 linear_layer2 = 128
 layer_dim = 1
-output_dim = 2
+output_dim = 1
 number_of_lstm_layers = 3
 number_of_linear_models = 3
 
@@ -249,7 +249,7 @@ def evaluate(model, train_loader, validation_loader, criterion):
         for x, y in loader:
             x, y = x.to(device), y.to(device)  # Déplacer les données sur le bon périphérique
             logits = model(x)  # Obtenir les prédictions du modèle
-            loss = criterion(logits, y)  # Calculer la perte
+            loss = criterion(logits, y.unsqueeze(-1).float())  # Calculer la perte
             total_loss += loss.item()
 
             # Convertir les logits en prédictions de classe
@@ -279,12 +279,18 @@ class LSTMModel(nn.Module):
         self.linear1 = nn.Linear(hidden_dim3, linear_layer1)
         self.linear2 = nn.Linear(linear_layer1, linear_layer2)
         self.fc = nn.Linear(linear_layer2, output_dim)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.embedding(x)
         out, (hn, cn) = self.lstm(x)
+        out, (hn, cn) = self.lstm2(out)
+        out, (hn, cn) = self.lstm3(out)
         out = out[:, -1, :]
+        out = self.linear1(out)
+        out = self.linear2(out)
         out = self.fc(out)
+        out = self.sigmoid(out)
         return out
 
 network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim1, layer_dim=layer_dim, output_dim=output_dim)
@@ -292,7 +298,7 @@ network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim1, layer_dim=layer
 device = torch.device(device)
 network.to(device)
 
-criterion = nn.CrossEntropyLoss()
+criterion = nn.BCELoss()
 optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
 
 print(f"Parameters: {sum(p.numel() for p in network.parameters())/1e6} M parameters")
@@ -328,7 +334,7 @@ def train(num_epochs, learning_rate):
 
         for x, y in train_loader:
             pred = network(x)
-            loss = criterion(pred, y)
+            loss = criterion(pred, y.unsqueeze(-1).float())
             train_losses.append(loss.item())
 
             optimizer.zero_grad()
