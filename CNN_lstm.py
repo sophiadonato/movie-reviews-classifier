@@ -37,10 +37,10 @@ sequence_length = 100
 batch_size = 32
 num_workers = 0
 
-learning_rate = 1e-5
+learning_rate = 1e-3
 num_epochs = 200
 
-input_dim = 15
+input_dim = 128
 hidden_dim1 = 128
 hidden_dim2 = 256
 hidden_dim3 = 512
@@ -62,7 +62,7 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "LSTMModel"
+model_name = "LSTMModelBCEWithLogits"
 directory = "../vilour/LSTM"
 checkpoint = f"{directory}/{model_name}.pt"
 
@@ -183,22 +183,6 @@ encoded_labels = torch.tensor(y, dtype=torch.long).to(device)
 
 print("Tokenization and padding done")
 
-# Padding function
-def pad_sequences(sequences, max_length, pad_token_id):
-    padded_sequences = []
-    for seq in sequences:
-        if len(seq) < max_length:
-            # Padding if the sequence is too short
-            # dtype=torch.long is used to ensure that the padding token is of the same type as the input sequences
-            seq = torch.cat([seq, torch.full((max_length - len(seq),), pad_token_id, device=device, dtype=torch.long)])
-        else:
-            # Truncating if the sequence is too long
-            seq = seq[:max_length]
-        padded_sequences.append(seq)
-    return torch.stack(padded_sequences)
-
-# TRAIN AND TEST SETS SPLIT 
-
 n = int(0.8 * len(encoded_reviews))
 
 # Define the maximum length for padding
@@ -215,25 +199,6 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
 print("Train and test sets split")
-
-# DATA LOADER
-
-# Generate mini-batch of data for training
-def get_batch(data, labels):
-    # Randomly select batch_size sequences from the dataset
-    # In example of teacher, len(data) - block_size is used because 
-    # the model needs the next token to check if the prediction is
-    # correct or not. In our case, we do not need the next token.
-    ix = torch.randint(len(data), (batch_size,))
-    # Select the corresponding labels for the selected sequences
-    x = torch.stack([data[i] for i in ix])
-    # Select the corresponding labels for the selected sequences
-    y = torch.stack([labels[i] for i in ix])
-    # Move the data and labels to the specified device
-    x, y = x.to(device), y.to(device)
-    # Return the mini-batch of data and labels
-    return x, y
-
 
 
 @torch.no_grad()
@@ -253,18 +218,7 @@ def evaluate(model, train_loader, validation_loader, criterion):
             total_loss += loss.item()
 
             # Convertir les logits en prédictions de classe
-            # predictions = torch.argmax(logits, dim=1)
-            predictions = np.zeros(y.size(0))
-            i = 0
-            for prediction in logits:
-                if prediction >= 0.5:
-                    predictions[i] = 1
-                else:
-                    predictions[i] = 0
-                i += 1
-
-            predictions = torch.tensor(predictions)
-            predictions = predictions.to(device)
+            predictions = torch.argmax(logits, dim=1)
 
             total_correct += (predictions == y).sum().item()
             total_samples += y.size(0)
@@ -312,7 +266,7 @@ network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim1, layer_dim=layer
 device = torch.device(device)
 network.to(device)
 
-criterion = nn.BCELoss()
+criterion = nn.BCEWithLogitsLoss()
 optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
 
 print(f"Parameters: {sum(p.numel() for p in network.parameters())/1e6} M parameters")
@@ -348,7 +302,7 @@ def train(num_epochs, learning_rate):
 
         for x, y in train_loader:
             pred = network(x)
-            loss = criterion(pred, y.unsqueeze(-1).float())
+            loss = criterion(pred, y)
             train_losses.append(loss.item())
 
             optimizer.zero_grad()
