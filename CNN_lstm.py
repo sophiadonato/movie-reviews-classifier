@@ -262,8 +262,6 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
-        print(x.shape)
-        x = x.to(torch.float32)
         x = x.unsqueeze(-1)
 
         x = self.embedding(x)
