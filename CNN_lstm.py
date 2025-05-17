@@ -263,8 +263,8 @@ def evaluate(model, train_loader, validation_loader, criterion):
                     predictions[i] = 0
                 i += 1
 
-            predictions = predictions.to(device)
             predictions = torch.tensor(predictions)
+            predictions = predictions.to(device)
 
             total_correct += (predictions == y).sum().item()
             total_samples += y.size(0)
