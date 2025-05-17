@@ -56,7 +56,7 @@ eval_every = 1
 save_every = 10
 
 dataset_part = 1
-dropout = 0.3
+dropout = 0.2
 
 print("Hyperparameters done")
 
@@ -263,6 +263,8 @@ def evaluate(model, train_loader, validation_loader, criterion):
                     predictions[i] = 0
                 i += 1
 
+            predictions = predictions.to(device)
+
             total_correct += (predictions == y).sum().item()
             total_samples += y.size(0)
 
@@ -289,6 +291,7 @@ class LSTMModel(nn.Module):
         self.linear2 = nn.Linear(linear_layer1, linear_layer2)
         self.fc = nn.Linear(linear_layer2, output_dim)
         self.sigmoid = nn.Sigmoid()
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
         x = self.embedding(x)
@@ -300,6 +303,7 @@ class LSTMModel(nn.Module):
         out = self.linear2(out)
         out = self.fc(out)
         out = self.sigmoid(out)
+        out = self.dropout(out)
         return out
 
 network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim1, layer_dim=layer_dim, output_dim=output_dim)
