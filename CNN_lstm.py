@@ -300,7 +300,7 @@ def train(num_epochs, learning_rate):
 
         for x, y in train_loader:
             pred = network(x)
-            loss = criterion(pred, y)
+            loss = criterion(pred, y.unsqueeze(-1))
             train_losses.append(loss.item())
 
             optimizer.zero_grad()

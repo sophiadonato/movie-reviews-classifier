@@ -181,21 +181,6 @@ encoded_labels = torch.tensor(y, dtype=torch.long).to(device)
 
 print("Tokenization and padding done")
 
-# Padding function
-def pad_sequences(sequences, max_length, pad_token_id):
-    padded_sequences = []
-    for seq in sequences:
-        if len(seq) < max_length:
-            # Padding if the sequence is too short
-            # dtype=torch.long is used to ensure that the padding token is of the same type as the input sequences
-            seq = torch.cat([seq, torch.full((max_length - len(seq),), pad_token_id, device=device, dtype=torch.long)])
-        else:
-            # Truncating if the sequence is too long
-            seq = seq[:max_length]
-        padded_sequences.append(seq)
-    return torch.stack(padded_sequences)
-
-# TRAIN AND TEST SETS SPLIT 
 
 n = int(0.8 * len(encoded_reviews))
 
@@ -213,26 +198,6 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
 print("Train and test sets split")
-
-# DATA LOADER
-
-# Generate mini-batch of data for training
-def get_batch(data, labels):
-    # Randomly select batch_size sequences from the dataset
-    # In example of teacher, len(data) - block_size is used because 
-    # the model needs the next token to check if the prediction is
-    # correct or not. In our case, we do not need the next token.
-    ix = torch.randint(len(data), (batch_size,))
-    # Select the corresponding labels for the selected sequences
-    x = torch.stack([data[i] for i in ix])
-    # Select the corresponding labels for the selected sequences
-    y = torch.stack([labels[i] for i in ix])
-    # Move the data and labels to the specified device
-    x, y = x.to(device), y.to(device)
-    # Return the mini-batch of data and labels
-    return x, y
-
-
 
 for i in range(number_of_conv_layers):
     input_features = (input_features - kernel_size + 1) // 2
