@@ -244,9 +244,8 @@ class LSTMModel(nn.Module):
 
         self.linear1 = nn.Linear(hidden_dim3, linear_layer1)
         self.linear2 = nn.Linear(linear_layer1, linear_layer2)
-        self.fc = nn.Linear(linear_layer2, output_dim)
-        self.sigmoid = nn.Sigmoid()
         self.dropout = nn.Dropout(dropout)
+        self.fc = nn.Linear(linear_layer2, output_dim)
 
     def forward(self, x):
         x = self.embedding(x)
@@ -256,9 +255,8 @@ class LSTMModel(nn.Module):
         out = out[:, -1, :]
         out = self.linear1(out)
         out = self.linear2(out)
-        out = self.fc(out)
-        out = self.sigmoid(out)
         out = self.dropout(out)
+        out = self.fc(out)
         return out
 
 network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim1, layer_dim=layer_dim, output_dim=output_dim)
