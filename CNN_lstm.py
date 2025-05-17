@@ -37,7 +37,7 @@ sequence_length = 100
 batch_size = 32
 num_workers = 0
 
-learning_rate = 1e-3
+learning_rate = 1e-5
 num_epochs = 200
 
 input_dim = 1
@@ -286,9 +286,9 @@ def train(num_epochs, learning_rate):
     test_accuracy = []
 
     for i in range(num_epochs + 1):
-        # if i % 10 == 0:
-        #     learning_rate /= 2
-        #     optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
+        if i % 10 == 0:
+            learning_rate /= 2
+            optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
 
         print(f"Epoch number : {i+1}")
         if i % eval_every == 0:
