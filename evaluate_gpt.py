@@ -227,8 +227,7 @@ model_name = "sentiment-analysis-gpt"
 directory = "./checkpoints"
 checkpoint_path = f"{directory}/{model_name}.pt"
 net = GPTSentimentAnalysisModel().to(device)
-checkpoint_data = torch.load(checkpoint_path)
-net.load_state_dict(checkpoint_data['model'])
+net.load_state_dict(torch.load(checkpoint_path))
 net = net.to(device)
 net.eval()
 
