@@ -41,9 +41,15 @@ learning_rate = 1e-5
 num_epochs = 200
 
 input_dim = 15
-hidden_dim = 100
+hidden_dim1 = 128
+hidden_dim2 = 256
+hidden_dim3 = 512
+linear_layer1 = 256
+linear_layer2 = 128
 layer_dim = 1
 output_dim = 2
+number_of_lstm_layers = 3
+number_of_linear_models = 3
 
 
 eval_every = 1
@@ -70,10 +76,18 @@ wandb.init(
         "batch_size": batch_size,
         "vocab_n": vocab_n,
         "sequence_legth": sequence_length,
+
         "input_dim": input_dim,
-        "hidden_dim": hidden_dim,
+        "hidden_dim1": hidden_dim1,
+        "hidden_dim2": hidden_dim2,
+        "hidden_dim3": hidden_dim3,
+        "linear_layer1": linear_layer1,
+        "linear_layer2": linear_layer2,
         "layer_dim": layer_dim,
         "output_dim": output_dim,
+        "number_of_lstm_layers": number_of_lstm_layers,
+        "number_of_linear_models": number_of_linear_models,
+
         "num_workers": num_workers,
         "learning_rate": learning_rate,
         "num_epochs": num_epochs,
@@ -259,18 +273,21 @@ class LSTMModel(nn.Module):
 
         self.embedding = nn.Embedding(vocab_n, input_dim)
         self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, output_dim)
+        self.lstm2 = nn.LSTM(hidden_dim, hidden_dim2, layer_dim, batch_first=True)
+        self.lstm3 = nn.LSTM(hidden_dim2, hidden_dim3, layer_dim, batch_first=True)
+
+        self.linear1 = nn.Linear(hidden_dim3, linear_layer1)
+        self.linear2 = nn.Linear(linear_layer1, linear_layer2)
+        self.fc = nn.Linear(linear_layer2, output_dim)
 
     def forward(self, x):
-        x = x.unsqueeze(-1)
-
         x = self.embedding(x)
         out, (hn, cn) = self.lstm(x)
         out = out[:, -1, :]
         out = self.fc(out)
         return out
 
-network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim, layer_dim=layer_dim, output_dim=output_dim)
+network = LSTMModel(input_dim=input_dim, hidden_dim=hidden_dim1, layer_dim=layer_dim, output_dim=output_dim)
 
 device = torch.device(device)
 network.to(device)
