@@ -27,13 +27,8 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from nltk.stem import WordNetLemmatizer
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.optim.lr_scheduler import StepLR
-from torch.optim.lr_scheduler import ExponentialLR
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-from torch.optim.lr_scheduler import CyclicLR
-from torch.optim.lr_scheduler import OneCycleLR
-from torch.optim.lr_scheduler import LambdaLR
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+import time
+
 
 print("Imports done")
 
@@ -55,7 +50,7 @@ n_embedding = 512
 n_blocks = 12
 n_head = 8
 dropout = 0.2
-max_iters = 10000
+max_iters = 50000
 learning_rate = 1e-4
 eval_every = 500
 eval_iters = 200
@@ -67,10 +62,11 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "sentiment-analysis-gpt"
+model_name = "sentiment-analysis-gpt-best_model"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok=True)
 checkpoint = f"{directory}/{model_name}.pt"
+best_checkpoint = f"{directory}/{model_name}_best.pt"
 
 print("Checkpoints done")
 
@@ -431,6 +427,7 @@ print("Model initialized")
 # Initialize variables
 start_iter = 0
 best_val_loss = float('inf')
+best_validation_accuracy = 0.0
 
 # Check if a checkpoint exists
 if os.path.exists(checkpoint):
@@ -454,6 +451,10 @@ if os.path.exists(checkpoint):
     # Load best validation loss if available
     if 'best_val_loss' in checkpoint_data:
         best_val_loss = checkpoint_data['best_val_loss']
+
+    # Load best validation accuracy if available
+    if 'best_validation_accuracy' in checkpoint_data:
+        best_validation_accuracy = checkpoint_data['best_validation_accuracy']
     
     print(f"Resuming training from iteration {start_iter}")
 else:
@@ -468,6 +469,34 @@ for i in range(start_iter, max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
         results = evaluate(lm, train_loader, validation_loader, criterion)
+
+        save_best = False
+    
+        if results['validation_loss'] < best_val_loss:
+            best_val_loss = results['validation_loss']
+            print(f"New best model! Validation loss: {best_val_loss:.4f}")
+            save_best = True
+            
+        if results['validation_accuracy'] > best_validation_accuracy:
+            best_validation_accuracy = results['validation_accuracy']
+            print(f"New best accuracy! Validation accuracy: {best_validation_accuracy:.4f}")
+            save_best = True
+        
+        # Save only if the validation_accuracy or validation_loss is better
+        if save_best:
+            best_checkpoint_data = {
+                'iteration': i,
+                'model': lm.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict(),
+                'best_val_loss': best_val_loss,
+                'validation_accuracy': results['validation_accuracy'],
+                'best_validation_accuracy': best_validation_accuracy
+            }
+
+            torch.save(best_checkpoint_data, best_checkpoint)
+            print(f"Best model saved at iteration {i}")
+
         print(f"Step {i}: Train Loss: {results['train_loss']:.4f}, Train Accuracy: {results['train_accuracy']:.4f}, "
           f"Validation Loss: {results['validation_loss']:.4f}, Validation Accuracy: {results['validation_accuracy']:.4f}")
         
@@ -497,8 +526,12 @@ for i in range(start_iter, max_iters + 1):
             'model': lm.state_dict(),
             'optimizer': optimizer.state_dict(),
             'scheduler': scheduler.state_dict(),
-            'best_val_loss': best_val_loss if 'best_val_loss' in locals() else float('inf')
+            'best_val_loss': best_val_loss,
+            'validation_accuracy': results['validation_accuracy'] if 'results' in locals() else 0.0,
+            'best_validation_accuracy': best_validation_accuracy
         }
         torch.save(checkpoint_data, checkpoint)
+        
+        print(f"Checkpoint saved at iteration {i}")
 
 print("Training done")

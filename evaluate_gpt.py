@@ -241,7 +241,7 @@ with torch.no_grad():
         all_labels.extend(y.int().cpu().numpy())
 
 # Confusion matrix
-wandb.init(project="evaluation-review-classifier", name="evaluation-v4-longertext")
+wandb.init(project="evaluation-review-classifier", name="GPT_2_evaluation")
 wandb.log({
     "confusion_matrix": wandb.plot.confusion_matrix(
         probs=None,

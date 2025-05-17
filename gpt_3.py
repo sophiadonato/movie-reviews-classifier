@@ -67,10 +67,11 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "sentiment-analysis-gpt"
+model_name = "sentiment-analysis-gpt-absolute-pos"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok=True)
 checkpoint = f"{directory}/{model_name}.pt"
+best_checkpoint = f"{directory}/{model_name}_best.pt"
 
 print("Checkpoints done")
 
@@ -406,6 +407,43 @@ criterion = nn.CrossEntropyLoss()
 
 print("Model initialized")
 
+# Initialize variables
+start_iter = 0
+best_val_loss = float('inf')
+best_validation_accuracy = 0.0
+
+# Check if a checkpoint exists
+if os.path.exists(checkpoint):
+    print(f"Loading checkpoint from {checkpoint}")
+    checkpoint_data = torch.load(checkpoint)
+    
+    # Load model weights
+    lm.load_state_dict(checkpoint_data['model'])
+    
+    # Load optimizer state
+    optimizer.load_state_dict(checkpoint_data['optimizer'])
+    
+    # Load scheduler state if available
+    if 'scheduler' in checkpoint_data:
+        scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+        scheduler.load_state_dict(checkpoint_data['scheduler'])
+    
+    # Set the starting iteration
+    start_iter = checkpoint_data['iteration']
+    
+    # Load best validation loss if available
+    if 'best_val_loss' in checkpoint_data:
+        best_val_loss = checkpoint_data['best_val_loss']
+
+    # Load best validation accuracy if available
+    if 'best_validation_accuracy' in checkpoint_data:
+        best_validation_accuracy = checkpoint_data['best_validation_accuracy']
+    
+    print(f"Resuming training from iteration {start_iter}")
+else:
+    print("No checkpoint found. Starting training from scratch.")
+    scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+
 # ====================================== TRAINING LOOP ======================================
 
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
@@ -413,10 +451,38 @@ print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters'
 # Initialize the scheduler
 scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
 
-for i in range(max_iters + 1):
+for i in range(start_iter, max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
         results = evaluate(lm, train_loader, validation_loader, criterion)
+
+        save_best = False
+    
+        if results['validation_loss'] < best_val_loss:
+            best_val_loss = results['validation_loss']
+            print(f"New best model! Validation loss: {best_val_loss:.4f}")
+            save_best = True
+            
+        if results['validation_accuracy'] > best_validation_accuracy:
+            best_validation_accuracy = results['validation_accuracy']
+            print(f"New best accuracy! Validation accuracy: {best_validation_accuracy:.4f}")
+            save_best = True
+        
+        # Save only if the validation_accuracy or validation_loss is better
+        if save_best:
+            best_checkpoint_data = {
+                'iteration': i,
+                'model': lm.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict(),
+                'best_val_loss': best_val_loss,
+                'validation_accuracy': results['validation_accuracy'],
+                'best_validation_accuracy': best_validation_accuracy
+            }
+
+            torch.save(best_checkpoint_data, best_checkpoint)
+            print(f"Best model saved at iteration {i}")
+
         print(f"Step {i}: Train Loss: {results['train_loss']:.4f}, Train Accuracy: {results['train_accuracy']:.4f}, "
           f"Validation Loss: {results['validation_loss']:.4f}, Validation Accuracy: {results['validation_accuracy']:.4f}")
         
@@ -440,6 +506,17 @@ for i in range(max_iters + 1):
 
     # Model save
     if i % save_every == 0:
-        torch.save(lm.state_dict(), checkpoint)
+        checkpoint_data = {
+            'iteration': i,
+            'model': lm.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'scheduler': scheduler.state_dict(),
+            'best_val_loss': best_val_loss,
+            'validation_accuracy': results['validation_accuracy'] if 'results' in locals() else 0.0,
+            'best_validation_accuracy': best_validation_accuracy
+        }
+        torch.save(checkpoint_data, checkpoint)
+        
+        print(f"Checkpoint saved at iteration {i}")
 
 print("Training done")
