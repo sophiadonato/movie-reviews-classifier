@@ -254,7 +254,7 @@ def evaluate(model, train_loader, validation_loader, criterion):
 
             # Convertir les logits en prédictions de classe
             # predictions = torch.argmax(logits, dim=1)
-            predictions = np.zeros(logits.shape)
+            predictions = np.zeros(y.size(0))
             i = 0
             for prediction in logits:
                 if prediction >= 0.5:
