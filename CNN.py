@@ -269,7 +269,7 @@ class CNN(nn.Sequential):
 
     def forward(self, x):
         x = self.embedding1(x)
-        x = x.view(x.shape[0], 15, 100)
+        x = x.view(x.shape[0], 64, 100)
         x = self.conv1d1(x)
         x = self.reLUConv1(x)
         x = self.conv1d2(x)
