@@ -22,11 +22,15 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
+print("Imports done")
+
 # ====================================== GPU DETECTION ======================================
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Device: {device}")
 torch.manual_seed(100)
+
+print("GPU detection done")
 
 # ====================================== HYPERPARAMETERS ======================================
 
@@ -46,6 +50,8 @@ save_every = 1000
 num_words = 50000
 max_sequence_length = 128
 
+print("Hyperparameters done")
+
 # ====================================== CHECKPOINTS ======================================
 
 model_name = "sentiment-analysis-gpt-best_model"
@@ -53,6 +59,8 @@ directory = "./checkpoints"
 os.makedirs(directory, exist_ok = True)
 checkpoint = f"{directory}/{model_name}.pt"
 best_checkpoint = f"{directory}/{model_name}_best.pt"
+
+print("Checkpoints done")
 
 # ====================================== WAND B ======================================
 
@@ -73,11 +81,15 @@ wandb.init(
     }
 )
 
+print("WandB done")
+
 # ====================================== DATA ======================================
 
 # Dataset loading
 file_path = "movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv"
 dataSet = pd.read_csv(file_path)
+
+print("Dataset loaded")
 
 # Following lines were used to test the model on a smaller dataset
 # Decreasing the size of the dataset to speed up the training process
@@ -117,6 +129,8 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex = T
 # 7. Remove empty reviews
 dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
 
+print("Dataset preprocessed")
+
 # TOKENIZATION 
 
 # Convert the reviews and labels to numpy arrays for easier manipulation
@@ -136,6 +150,8 @@ X_padded = pad_sequences(X_sequences, padding = "post", maxlen = max_sequence_le
 # Convert the padded sequences to PyTorch tensors
 encoded_reviews = torch.tensor(X_padded, dtype = torch.long).to(device)
 encoded_labels = torch.tensor(y, dtype = torch.long).to(device)
+
+print("Tokenization and padding done")
 
 # Padding function
 def pad_sequences(sequences, max_length, pad_token_id):
@@ -170,6 +186,8 @@ validation_dataset = TensorDataset(test_reviews, test_labels)
 
 train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle = True)
 validation_loader = DataLoader(validation_dataset, batch_size = batch_size)
+
+print("Train and test sets split")
 
 # DATA LOADER
 
@@ -396,6 +414,8 @@ lm = GPTSentimentAnalysisModel().to(device)
 optimizer = torch.optim.AdamW(lm.parameters(), lr = learning_rate)
 criterion = nn.CrossEntropyLoss()
 
+print("Model initialized")
+
 # Initialize variables
 start_iter = 0
 best_val_loss = float('inf')
@@ -430,6 +450,8 @@ else:
     scheduler = CosineAnnealingLR(optimizer, T_max = max_iters)
 
 # ====================================== TRAINING LOOP ======================================
+
+print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
 for i in range(start_iter, max_iters + 1):
     if i % eval_every == 0:
