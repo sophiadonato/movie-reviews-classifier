@@ -37,7 +37,7 @@ sequence_length = 100
 batch_size = 32
 num_workers = 0
 
-learning_rate = 1e-2
+learning_rate = 1e-3
 num_epochs = 200
 
 input_features = sequence_length
@@ -49,23 +49,17 @@ output_Features3 = 512
 output_Features4 = 1024
 output_Features5 = 2048
 output_Features6 = 4096
-output_Features7 = 8192
-output_Features8 = 16384
 kernel_size = 3
+pool_layers = 1
 
-output_Features_final = 2048
+output_Features_final = 4096
 
-output_linear1 = 8192
-output_linear2 = 4096
-output_linear3 = 2048
-output_linear4 = 1024
-output_linear5 = 512
-output_linear6 = 256
-output_linear7 = 128
-output_linear8 = 64
+output_linear1 = 2048
+output_linear2 = 512
+output_linear3 = 128
 
-number_of_conv_layers = 5
-number_of_linear_layers = 8
+number_of_conv_layers = 6
+number_of_linear_layers = 3
 
 eval_every = 1
 save_every = 10
@@ -96,6 +90,7 @@ wandb.init(
         "num_epochs": num_epochs,
 
         "number of conv layers": number_of_conv_layers,
+        "number of pool layers": pool_layers,
         "kernel size": kernel_size,
         "number of linear layers": number_of_linear_layers,
 
@@ -189,21 +184,6 @@ encoded_labels = torch.tensor(y, dtype=torch.long).to(device)
 
 print("Tokenization and padding done")
 
-# Padding function
-def pad_sequences(sequences, max_length, pad_token_id):
-    padded_sequences = []
-    for seq in sequences:
-        if len(seq) < max_length:
-            # Padding if the sequence is too short
-            # dtype=torch.long is used to ensure that the padding token is of the same type as the input sequences
-            seq = torch.cat([seq, torch.full((max_length - len(seq),), pad_token_id, device=device, dtype=torch.long)])
-        else:
-            # Truncating if the sequence is too long
-            seq = seq[:max_length]
-        padded_sequences.append(seq)
-    return torch.stack(padded_sequences)
-
-# TRAIN AND TEST SETS SPLIT 
 
 n = int(0.8 * len(encoded_reviews))
 
@@ -222,28 +202,12 @@ validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
 print("Train and test sets split")
 
-# DATA LOADER
-
-# Generate mini-batch of data for training
-def get_batch(data, labels):
-    # Randomly select batch_size sequences from the dataset
-    # In example of teacher, len(data) - block_size is used because 
-    # the model needs the next token to check if the prediction is
-    # correct or not. In our case, we do not need the next token.
-    ix = torch.randint(len(data), (batch_size,))
-    # Select the corresponding labels for the selected sequences
-    x = torch.stack([data[i] for i in ix])
-    # Select the corresponding labels for the selected sequences
-    y = torch.stack([labels[i] for i in ix])
-    # Move the data and labels to the specified device
-    x, y = x.to(device), y.to(device)
-    # Return the mini-batch of data and labels
-    return x, y
-
-
 
 for i in range(number_of_conv_layers):
-    input_features = (input_features - kernel_size + 1) // 2
+    if i == 3:
+        input_features = (input_features - kernel_size + 1) // 2
+
+    input_features = (input_features - kernel_size + 1)
 
 @torch.no_grad()
 def evaluate(model, train_loader, validation_loader, criterion):
@@ -277,22 +241,20 @@ def evaluate(model, train_loader, validation_loader, criterion):
 class CNN(nn.Sequential):
     def __init__(self):
         super().__init__()
-        self.embedding1 = nn.Embedding(vocab_n, 15)
-        self.conv1d1 = nn.Conv1d(15, output_Features1, kernel_size)
+        self.embedding1 = nn.Embedding(vocab_n, 64)
+        self.conv1d1 = nn.Conv1d(64, output_Features1, kernel_size)
         self.reLUConv1 = nn.ReLU()
-        self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
         self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, kernel_size)
         self.reLUConv2 = nn.ReLU()
-        self.maxPool1d2 = nn.MaxPool1d(2, stride=2)
         self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, kernel_size)
         self.reLUConv3 = nn.ReLU()
-        self.maxPool1d3 = nn.MaxPool1d(2, stride=2)
+        self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
         self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, kernel_size)
         self.reLUConv4 = nn.ReLU()
-        self.maxPool1d4 = nn.MaxPool1d(2, stride=2)
         self.conv1d5 = nn.Conv1d(output_Features4, output_Features5, kernel_size)
         self.reLUConv5 = nn.ReLU()
-        self.maxPool1d5 = nn.MaxPool1d(2, stride=2)
+        self.conv1d6 = nn.Conv1d(output_Features5, output_Features6, kernel_size)
+        self.reLUConv6 = nn.ReLU()
         self.flatten1 = nn.Flatten()
 
         self.linear1 = nn.Linear(input_features * output_Features_final, output_linear1)
@@ -301,16 +263,7 @@ class CNN(nn.Sequential):
         self.reLULinear2 = nn.ReLU()
         self.linear3 = nn.Linear(output_linear2, output_linear3)
         self.reLULinear3 = nn.ReLU()
-        self.linear4 = nn.Linear(output_linear3, output_linear4)
-        self.reLULinear4 = nn.ReLU()
-        self.linear5 = nn.Linear(output_linear4, output_linear5)
-        self.linear6 = nn.Linear(output_linear5, output_linear6)
-        self.reLULinear6 = nn.ReLU()
-        self.linear7 = nn.Linear(output_linear6, output_linear7)
-        self.reLULinear7 = nn.ReLU()
-        self.linear8 = nn.Linear(output_linear7, output_linear8)
-        self.reLULinear8 = nn.ReLU()
-        self.linear9 = nn.Linear(output_linear8, output_features)
+        self.linear4 = nn.Linear(output_linear3, output_features)
         self.dropout = nn.Dropout(dropout)
 
 
@@ -319,19 +272,17 @@ class CNN(nn.Sequential):
         x = x.view(x.shape[0], 15, 100)
         x = self.conv1d1(x)
         x = self.reLUConv1(x)
-        x = self.maxPool1d1(x)
         x = self.conv1d2(x)
         x = self.reLUConv2(x)
-        x = self.maxPool1d2(x)
         x = self.conv1d3(x)
         x = self.reLUConv3(x)
         x = self.maxPool1d3(x)
         x = self.conv1d4(x)
         x = self.reLUConv4(x)
-        x = self.maxPool1d4(x)
         x = self.conv1d5(x)
         x = self.reLUConv5(x)
-        x = self.maxPool1d5(x)
+        x = self.conv1d6(x)
+        x = self.reLUConv6(x)
         x = self.flatten1(x)
 
         x = self.linear1(x)
@@ -341,15 +292,6 @@ class CNN(nn.Sequential):
         x = self.linear3(x)
         x = self.reLULinear3(x)
         x = self.linear4(x)
-        x = self.reLULinear4(x)
-        x = self.linear5(x)
-        x = self.linear6(x)
-        x = self.reLULinear6(x)
-        x = self.linear7(x)
-        x = self.reLULinear7(x)
-        x = self.linear8(x)
-        x = self.reLULinear8(x)
-        x = self.linear9(x)
         x = self.dropout(x)
         return x
 
