@@ -56,8 +56,8 @@ X_tensor = torch.tensor(X_padded, dtype=torch.long)
 y_tensor = torch.tensor(y, dtype=torch.float32)
 
 dataset = torchdata.TensorDataset(X_tensor, y_tensor)
-train_set, test_set = torchdata.random_split(dataset, [int(0.9*len(dataset)), len(dataset)-int(0.9*len(dataset))])
-trainloader = torchdata.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+train_set, test_set = torchdata.random_split(dataset, [int(0*len(dataset)), len(dataset)-int(0*len(dataset))])
+#trainloader = torchdata.DataLoader(train_set, batch_size=batch_size, shuffle=True)
 testloader = torchdata.DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
 #Model
