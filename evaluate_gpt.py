@@ -41,7 +41,7 @@ max_seq_len = 128
 data = pd.read_csv("./movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv")
 data = data.dropna(subset=["reviewText"])
 
-sentiment_mapping = {'POSITIVE' : 0, 'NEGATIVE' : 1}
+sentiment_mapping = {'POSITIVE' : 1, 'NEGATIVE' : 0}
 data["scoreSentiment"] = data["scoreSentiment"].map(sentiment_mapping).to_numpy()
 
 nltk.download('wordnet', quiet=True)
@@ -71,8 +71,8 @@ X_tensor = torch.tensor(X_padded, dtype=torch.long)
 y_tensor = torch.tensor(y, dtype=torch.float32)
 
 dataset = torchdata.TensorDataset(X_tensor, y_tensor)
-train_set, test_set = torchdata.random_split(dataset, [int(0.9*len(dataset)), len(dataset)-int(0.9*len(dataset))])
-trainloader = torchdata.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+train_set, test_set = torchdata.random_split(dataset, [int(0*len(dataset)), len(dataset)-int(1*len(dataset))])
+# trainloader = torchdata.DataLoader(train_set, batch_size=batch_size, shuffle=True)
 testloader = torchdata.DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
 #Model
