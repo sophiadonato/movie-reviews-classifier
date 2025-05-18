@@ -205,10 +205,10 @@ print("Train and test sets split")
 
 for i in range(number_of_conv_layers):
     if i == 2:
-        input_features = input_features // 2
         input_features = (input_features - kernel_size + 1)
-
-    input_features = (input_features - kernel_size + 1)
+        input_features = input_features // 2
+    else:
+        input_features = (input_features - kernel_size + 1)
 
 @torch.no_grad()
 def evaluate(model, train_loader, validation_loader, criterion):
