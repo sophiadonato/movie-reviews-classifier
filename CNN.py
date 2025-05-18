@@ -204,8 +204,9 @@ print("Train and test sets split")
 
 
 for i in range(number_of_conv_layers):
-    if i == 3:
-        input_features = (input_features - kernel_size + 1) // 2
+    if i == 2:
+        input_features = input_features // 2
+        input_features = (input_features - kernel_size + 1)
 
     input_features = (input_features - kernel_size + 1)
 
