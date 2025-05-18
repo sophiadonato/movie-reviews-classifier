@@ -276,7 +276,7 @@ class CNN(nn.Sequential):
         x = self.reLUConv2(x)
         x = self.conv1d3(x)
         x = self.reLUConv3(x)
-        x = self.maxPool1d3(x)
+        x = self.maxPool1d1(x)
         x = self.conv1d4(x)
         x = self.reLUConv4(x)
         x = self.conv1d5(x)
