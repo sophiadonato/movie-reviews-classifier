@@ -32,16 +32,15 @@ output_Features1 = 64
 output_Features2 = 256
 output_Features3 = 512
 output_Features4 = 1024
-output_Features5 = 2048
-output_Features6 = 4096
 kernel_size = 3
 pool_layers = 1
 
-output_Features_final = 4096
+output_Features_final = 1024
 
-output_linear1 = 2048
-output_linear2 = 512
+output_linear1 = 512
+output_linear2 = 256
 output_linear3 = 128
+output_linear4 = 64
 
 number_of_conv_layers = 6
 number_of_linear_layers = 3
@@ -72,11 +71,11 @@ X = data["reviewText"].to_numpy()
 y = data["scoreSentiment"].to_numpy()
 
 #Tokenization and padding
-tokenizer = Tokenizer(num_words=num_words)
+tokenizer = Tokenizer(num_words=vocab_n)
 tokenizer.fit_on_texts(X)
 X_sequences = tokenizer.texts_to_sequences(X)
 
-X_padded = pad_sequences(X_sequences, padding='post', maxlen=max_sequence_length)
+X_padded = pad_sequences(X_sequences, padding='post', maxlen=sequence_length)
 
 #Datasets ready
 X_tensor = torch.tensor(X_padded, dtype=torch.long)
@@ -91,8 +90,8 @@ testloader = torchdata.DataLoader(test_set, batch_size=batch_size, shuffle=False
 class CNN(nn.Sequential):
     def __init__(self):
         super().__init__()
-        self.embedding1 = nn.Embedding(vocab_n, 64)
-        self.conv1d1 = nn.Conv1d(64, output_Features1, kernel_size)
+        self.embedding1 = nn.Embedding(vocab_n, 15)
+        self.conv1d1 = nn.Conv1d(15, output_Features1, kernel_size)
         self.reLUConv1 = nn.ReLU()
         self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, kernel_size)
         self.reLUConv2 = nn.ReLU()
@@ -101,10 +100,6 @@ class CNN(nn.Sequential):
         self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
         self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, kernel_size)
         self.reLUConv4 = nn.ReLU()
-        self.conv1d5 = nn.Conv1d(output_Features4, output_Features5, kernel_size)
-        self.reLUConv5 = nn.ReLU()
-        self.conv1d6 = nn.Conv1d(output_Features5, output_Features6, kernel_size)
-        self.reLUConv6 = nn.ReLU()
         self.dropout1 = nn.Dropout(dropout)
         self.flatten1 = nn.Flatten()
 
@@ -114,13 +109,15 @@ class CNN(nn.Sequential):
         self.reLULinear2 = nn.ReLU()
         self.linear3 = nn.Linear(output_linear2, output_linear3)
         self.reLULinear3 = nn.ReLU()
-        self.linear4 = nn.Linear(output_linear3, output_features)
+        self.linear4 = nn.Linear(output_Features3, output_Features4)
+        self.reLULinear4 = nn.ReLU()
+        self.linear5 = nn.Linear(output_linear4, output_features)
         self.dropout = nn.Dropout(dropout)
 
 
     def forward(self, x):
         x = self.embedding1(x)
-        x = x.view(x.shape[0], 64, 100)
+        x = x.view(x.shape[0], 15, 100)
         x = self.conv1d1(x)
         x = self.reLUConv1(x)
         x = self.conv1d2(x)
@@ -130,10 +127,7 @@ class CNN(nn.Sequential):
         x = self.maxPool1d1(x)
         x = self.conv1d4(x)
         x = self.reLUConv4(x)
-        x = self.conv1d5(x)
-        x = self.reLUConv5(x)
-        x = self.conv1d6(x)
-        x = self.reLUConv6(x)
+        x = self.dropout1(x)
         x = self.flatten1(x)
 
         x = self.linear1(x)
@@ -143,12 +137,14 @@ class CNN(nn.Sequential):
         x = self.linear3(x)
         x = self.reLULinear3(x)
         x = self.linear4(x)
+        x = self.reLULinear4(x)
+        x = self.linear5(x)
         x = self.dropout(x)
         return x
     
 checkpoint_path = "../vilour/CNN/CNN_2Layer_20.pt"
 net = CNN()
-net.load_state_dict(torch.load(checkpoint_path))
+net.load_state_dict(torch.load(checkpoint_path, map_location=device))
 net = net.to(device)
 net.eval()
 
@@ -189,7 +185,7 @@ new_reviews = ["This movie is amazing !", "I didn't like ThunderBolts, it was re
             "A joyful rollercoaster of a film that embraces its absurdity and runs with it. Sure, it’s ridiculous and over-the-top, but that’s exactly the charm. The cast is clearly having a blast, the script is snappy, and the energy never lets up. It knows what it is and doesn’t try to be more than that. The result is pure fun—flawed, yes, but undeniably entertaining. If you’re in the mood for something light and fast-paced, this might hit the spot. Just don’t expect depth or subtlety, and you’ll have a great time."]
 new_reviews_cleaned = [clean_text(review) for review in new_reviews]
 new_reviews_seq = tokenizer.texts_to_sequences(new_reviews_cleaned)
-new_reviews_padded = pad_sequences(new_reviews_seq, padding='post', maxlen = max_sequence_length)
+new_reviews_padded = pad_sequences(new_reviews_seq, padding='post', maxlen = sequence_length)
 new_reviews_tensor = torch.tensor(new_reviews_padded, dtype=torch.long).to(device)
 
 with torch.no_grad():
