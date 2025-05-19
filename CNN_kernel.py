@@ -47,7 +47,7 @@ output_Features1 = 64
 output_Features2 = 256
 output_Features3 = 512
 output_Features4 = 1024
-kernel_size = 6
+kernel_size = 3
 
 output_Features_final = 1024
 
@@ -69,7 +69,7 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "CNN_2Layer_20"
+model_name = "CNN_evaluation"
 directory = "../vilour/CNN"
 checkpoint = f"{directory}/{model_name}.pt"
 
