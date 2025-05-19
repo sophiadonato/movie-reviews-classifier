@@ -276,6 +276,7 @@ class CNN(nn.Sequential):
         x = self.reLUConv4(x)
         x = self.maxPool1d4(x)
         x = self.flatten1(x)
+
         x = self.linear1(x)
         x = self.reLU4(x)
         x = self.linear2(x)
