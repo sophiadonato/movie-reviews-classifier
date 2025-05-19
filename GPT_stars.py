@@ -145,6 +145,9 @@ dataSet_clean = dataSet.dropna(subset=['star_rating'])
 # Convert score to int
 dataSet_clean['star_rating'] = dataSet_clean['star_rating'].astype(int)
 
+# Clip the star_rating to be between 0 and 5
+dataSet_clean['star_rating'] = dataSet_clean['star_rating'].clip(0, 5)
+
 # Check validity of reviews
 dataSet_clean = dataSet_clean.dropna(subset=['reviewText'])
 
