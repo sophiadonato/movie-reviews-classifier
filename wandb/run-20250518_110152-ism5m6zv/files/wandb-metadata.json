@@ -1,0 +1,42 @@
+{
+  "os": "Windows-10-10.0.19045-SP0",
+  "python": "CPython 3.10.16",
+  "startedAt": "2025-05-18T09:01:52.177532Z",
+  "program": "c:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\CNN-test.py",
+  "codePath": "CNN-test.py",
+  "git": {
+    "remote": "https://gitlab.uliege.be/apprentissageprofond/projet_tomate_pourrie.git",
+    "commit": "8c00346e1d6efc9972b8284730a9779cab52d4ab"
+  },
+  "email": "sdonato@student.uliege.be",
+  "root": "C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie",
+  "host": "LAPTOP-IRAD57O0",
+  "executable": "C:\\Users\\sdona\\miniconda3\\envs\\projet_DL\\python.exe",
+  "codePathLocal": "CNN-test.py",
+  "cpu_count": 4,
+  "cpu_count_logical": 8,
+  "gpu": "NVIDIA GeForce MX450",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "510770802688",
+      "used": "472085774336"
+    }
+  },
+  "memory": {
+    "total": "16969424896"
+  },
+  "cpu": {
+    "count": 4,
+    "countLogical": 8
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA GeForce MX450",
+      "memoryTotal": "2147483648",
+      "cudaCores": 896,
+      "architecture": "Turing"
+    }
+  ],
+  "cudaVersion": "11.7"
+}

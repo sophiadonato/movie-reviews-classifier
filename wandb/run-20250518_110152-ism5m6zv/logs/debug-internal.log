@@ -1,0 +1,19 @@
+{"time":"2025-05-18T11:01:52.1792577+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"C:\\Users\\sdona\\Documents\\M1Q2_DeepLearning\\projet\\projet_tomate_pourrie\\wandb\\run-20250518_110152-ism5m6zv\\logs\\debug-core.log"}
+{"time":"2025-05-18T11:01:53.0066964+02:00","level":"INFO","msg":"created new stream","id":"ism5m6zv"}
+{"time":"2025-05-18T11:01:53.0066964+02:00","level":"INFO","msg":"stream: started","id":"ism5m6zv"}
+{"time":"2025-05-18T11:01:53.0066964+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"ism5m6zv"}
+{"time":"2025-05-18T11:01:53.0066964+02:00","level":"INFO","msg":"sender: started","stream_id":"ism5m6zv"}
+{"time":"2025-05-18T11:01:53.0066964+02:00","level":"INFO","msg":"handler: started","stream_id":"ism5m6zv"}
+{"time":"2025-05-18T11:01:53.2647077+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-18T11:02:08.2831771+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-18T11:02:23.2836326+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-18T11:02:38.2868328+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-18T11:02:53.2842622+02:00","level":"ERROR","msg":"monitor: error sampling metrics: Incorrect function."}
+{"time":"2025-05-18T11:03:07.6498656+02:00","level":"INFO","msg":"stream: closing","id":"ism5m6zv"}
+{"time":"2025-05-18T11:03:07.6504321+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-18T11:03:07.6504321+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-18T11:03:08.6217622+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-18T11:03:08.9392862+02:00","level":"INFO","msg":"handler: closed","stream_id":"ism5m6zv"}
+{"time":"2025-05-18T11:03:08.9392862+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ism5m6zv"}
+{"time":"2025-05-18T11:03:08.9393936+02:00","level":"INFO","msg":"sender: closed","stream_id":"ism5m6zv"}
+{"time":"2025-05-18T11:03:08.9399556+02:00","level":"INFO","msg":"stream: closed","id":"ism5m6zv"}

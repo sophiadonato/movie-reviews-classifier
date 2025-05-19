@@ -1,0 +1,41 @@
+WandB done
+Dataset loaded
+Dataset size decreased
+Dataset preprocessed
+['timed to be just long enough for most youngsters brief attention spans and its packed with plenty of interesting activity both on land and under the water'
+ 'it doesnt matter if a movie costs 300 million or only 300 dollars good is good and bad is bad and bloodmask the possession of nicole lameroux is just plain bad'
+ 'the choreography is so precise and lifelike at points one might wonder whether the movie was rotoscoped but no liveaction reference footage was used the quality is due to the skill of the animators and kodamas love for professional wrestling'
+ 'the films outoftouch attempts at humor may find them hunting for the reason the franchise was so popular in the first place'
+ 'its clumsy determination is endearing and sometimes wildly entertaining'
+ 'with every new minute theres another headscratching choice thats bound to elicit some amazing outloud responses so this feels like a true party flick'
+ 'emotionless reaction shots zero characterization guns that have absolutely no special effects when blasted dangerous men is rare winning dish from a one star restaurant'
+ 'conceivably it could serve as a primer for students on how not to make a movie and perhaps as a deconstruction of filmic conventions for the more theoretical minded'
+ 'if youre not a fan of garbage cinema even for the fun of it dangerous men is best to be avoided'
+ 'dangerous men the pictures production notes inform took 26 years to reach the big screen after having seen it i wonder what was the rush'] and y =  [1 0 1 0 1 1 1 0 0 0]
+object
+Tokenization and padding done
+Train and test sets split
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\CNN-test.py", line 309, in <module>
+    network.to(device)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1355, in to
+    return self._apply(convert)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 915, in _apply
+    module._apply(fn)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 942, in _apply
+    param_applied = fn(param)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1341, in convert
+    return t.to(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.28 GiB. GPU 0 has a total capacity of 2.00 GiB of which 335.06 MiB is free. Of the allocated memory 1.22 GiB is allocated by PyTorch, and 13.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\CNN-test.py", line 309, in <module>
+    network.to(device)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1355, in to
+    return self._apply(convert)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 915, in _apply
+    module._apply(fn)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 942, in _apply
+    param_applied = fn(param)
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\nn\modules\module.py", line 1341, in convert
+    return t.to(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.28 GiB. GPU 0 has a total capacity of 2.00 GiB of which 335.06 MiB is free. Of the allocated memory 1.22 GiB is allocated by PyTorch, and 13.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
