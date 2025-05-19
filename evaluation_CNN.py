@@ -51,9 +51,12 @@ save_every = 10
 dataset_part = 1
 dropout = 0.3
 
+for i in range(number_of_conv_layers):
+    input_features = (input_features - kernel_size + 1) // 2
+
 
 #Data extraction
-data = pd.read_csv("../rotten_tomatoes_movie_reviews.csv")
+data = pd.read_csv("rotten_tomatoes_movie_reviews.csv")
 data = data.dropna(subset=["reviewText"])
 
 sentiment_mapping = {'POSITIVE' : 1, 'NEGATIVE' : 0}
@@ -93,13 +96,16 @@ class CNN(nn.Sequential):
         self.embedding1 = nn.Embedding(vocab_n, 15)
         self.conv1d1 = nn.Conv1d(15, output_Features1, kernel_size)
         self.reLUConv1 = nn.ReLU()
+        self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
         self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, kernel_size)
         self.reLUConv2 = nn.ReLU()
+        self.maxPool1d2 = nn.MaxPool1d(2, stride=2)
         self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, kernel_size)
         self.reLUConv3 = nn.ReLU()
-        self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
+        self.maxPool1d3 = nn.MaxPool1d(2, stride=2)
         self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, kernel_size)
         self.reLUConv4 = nn.ReLU()
+        self.maxPool1d4 = nn.MaxPool1d(2, stride=2)
         self.dropout1 = nn.Dropout(dropout)
         self.flatten1 = nn.Flatten()
 
@@ -120,13 +126,16 @@ class CNN(nn.Sequential):
         x = x.view(x.shape[0], 15, 100)
         x = self.conv1d1(x)
         x = self.reLUConv1(x)
+        x = self.maxPool1d1(x)
         x = self.conv1d2(x)
         x = self.reLUConv2(x)
+        x = self.maxPool1d2(x)
         x = self.conv1d3(x)
         x = self.reLUConv3(x)
-        x = self.maxPool1d1(x)
+        x = self.maxPool1d3(x)
         x = self.conv1d4(x)
         x = self.reLUConv4(x)
+        x = self.maxPool1d4(x)
         x = self.dropout1(x)
         x = self.flatten1(x)
 
