@@ -94,7 +94,7 @@ print("WandB done")
 # ====================================== DATA ======================================
 
 # Dataset loading
-file_path = "movie_reviews_dataset/all_reviews.csv"
+file_path = "movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv"
 dataSet = pd.read_csv(file_path)
 
 print("Dataset loaded")
