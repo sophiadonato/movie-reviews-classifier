@@ -127,7 +127,7 @@ def normalize_score(score):
         if numeric_score <= 5:  # Supposed to be on a 5-point scale
             return round(numeric_score)
         elif numeric_score <= 10:  # Supposed to be on a 10-point scale
-            return round((numeric_score / 10) * 5)
+            return round(numeric_score / 2)
         else:  # Unknown scale, return None
             return None
     except ValueError:
