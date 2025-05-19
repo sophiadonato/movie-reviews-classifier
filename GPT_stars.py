@@ -27,7 +27,6 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from nltk.stem import WordNetLemmatizer
 from torch.optim.lr_scheduler import CosineAnnealingLR
-import time
 import re
 
 print("Imports done")
@@ -145,6 +144,12 @@ dataSet_clean = dataSet.dropna(subset=['star_rating'])
 
 # Convert score to int
 dataSet_clean['star_rating'] = dataSet_clean['star_rating'].astype(int)
+
+# Check validity of reviews
+dataSet_clean = dataSet_clean.dropna(subset=['reviewText'])
+
+# Convert reviewText to string to avoid issues with non-string types
+dataSet_clean['reviewText'] = dataSet_clean['reviewText'].astype(str)
 
 # 3. Removes stop words which do not add value to the analysis
 # Stopwords download
