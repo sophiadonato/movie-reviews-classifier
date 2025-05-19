@@ -62,7 +62,7 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "sentiment-analysis-gpt-best_model"
+model_name = "sentiment-analysis-gpt-star-model"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok=True)
 checkpoint = f"{directory}/{model_name}.pt"
@@ -464,6 +464,8 @@ start_iter = 0
 best_val_loss = float('inf')
 best_validation_accuracy = 0.0
 
+scheduler = None
+
 # Check if a checkpoint exists
 if os.path.exists(checkpoint):
     print(f"Loading checkpoint from {checkpoint}")
@@ -477,7 +479,7 @@ if os.path.exists(checkpoint):
     
     # Load scheduler state if available
     if 'scheduler' in checkpoint_data:
-        scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+        scheduler = CosineAnnealingLR(optimizer, T_max = max_iters)
         scheduler.load_state_dict(checkpoint_data['scheduler'])
     
     # Set the starting iteration
@@ -494,7 +496,9 @@ if os.path.exists(checkpoint):
     print(f"Resuming training from iteration {start_iter}")
 else:
     print("No checkpoint found. Starting training from scratch.")
-    scheduler = CosineAnnealingLR(optimizer, T_max=max_iters)
+
+if scheduler is None:
+    scheduler = CosineAnnealingLR(optimizer, T_max = max_iters)
 
 # ====================================== TRAINING LOOP ======================================
 

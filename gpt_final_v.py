@@ -22,6 +22,9 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
+# import for star prediction
+# import re
+
 print("Imports done")
 
 # ====================================== GPU DETECTION ======================================
@@ -130,6 +133,47 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex = T
 dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
 
 print("Dataset preprocessed")
+
+# DATA FOR STAR PREDICTION
+
+# This method is used to normalize the scores from various formats to a standard 0-5 scale.
+# def normalize_score(score):
+#     if pd.isna(score) or score == '':
+#         return None
+    
+#     # Conversion into format X/Y
+#     fraction_match = re.match(r'(\d+(\.\d+)?)/(\d+(\.\d+)?)', str(score))
+#     if fraction_match:
+#         numerator = float(fraction_match.group(1))
+#         denominator = float(fraction_match.group(3))
+#         if denominator == 0:
+#             return None
+#         normalized = (numerator / denominator) * 5
+#         return round(normalized)
+    
+#     # Convert score into format X.Y
+#     try:
+#         numeric_score = float(score)
+#         # Determine the scale based on the value
+#         if numeric_score <= 5:  # Supposed to be on a 5-point scale
+#             return round(numeric_score)
+#         elif numeric_score <= 10:  # Supposed to be on a 10-point scale
+#             return round((numeric_score / 10) * 5)
+#         else:  # Unknown scale, return None
+#             return None
+#     except ValueError:
+#         # Letter, return None
+#         return None
+    
+# # 2. Retrieve the originalScore and normalize it
+# dataSet['star_rating'] = dataSet['originalScore'].apply(normalize_score)
+
+# # Filter non valid score
+# dataSet_clean = dataSet.dropna(subset=['star_rating'])
+
+# # Convert score to int
+# dataSet_clean['star_rating'] = dataSet_clean['star_rating'].astype(int)
+
 
 # TOKENIZATION 
 
