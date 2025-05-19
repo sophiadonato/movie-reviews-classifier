@@ -105,6 +105,7 @@ class CNN(nn.Sequential):
         self.reLUConv5 = nn.ReLU()
         self.conv1d6 = nn.Conv1d(output_Features5, output_Features6, kernel_size)
         self.reLUConv6 = nn.ReLU()
+        self.dropout1 = nn.Dropout(dropout)
         self.flatten1 = nn.Flatten()
 
         self.linear1 = nn.Linear(input_features * output_Features_final, output_linear1)
@@ -145,7 +146,7 @@ class CNN(nn.Sequential):
         x = self.dropout(x)
         return x
     
-checkpoint_path = "../vilour/CNN"
+checkpoint_path = "../vilour/CNN/CNN_2Layer_20.pt"
 net = CNN()
 net.load_state_dict(torch.load(checkpoint_path))
 net = net.to(device)
