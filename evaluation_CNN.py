@@ -42,7 +42,7 @@ output_linear2 = 256
 output_linear3 = 128
 output_linear4 = 64
 
-number_of_conv_layers = 6
+number_of_conv_layers = 3
 number_of_linear_layers = 3
 
 eval_every = 1
@@ -52,7 +52,7 @@ dataset_part = 1
 dropout = 0.3
 
 for i in range(number_of_conv_layers):
-    input_features = (input_features - kernel_size + 1) // 2
+    input_features = (input_features - kernel_size + 1)
 
 
 #Data extraction
@@ -96,16 +96,12 @@ class CNN(nn.Sequential):
         self.embedding1 = nn.Embedding(vocab_n, 15)
         self.conv1d1 = nn.Conv1d(15, output_Features1, kernel_size)
         self.reLUConv1 = nn.ReLU()
-        self.maxPool1d1 = nn.MaxPool1d(2, stride=2)
         self.conv1d2 = nn.Conv1d(output_Features1, output_Features2, kernel_size)
         self.reLUConv2 = nn.ReLU()
-        self.maxPool1d2 = nn.MaxPool1d(2, stride=2)
         self.conv1d3 = nn.Conv1d(output_Features2, output_Features3, kernel_size)
         self.reLUConv3 = nn.ReLU()
-        self.maxPool1d3 = nn.MaxPool1d(2, stride=2)
         self.conv1d4 = nn.Conv1d(output_Features3, output_Features4, kernel_size)
         self.reLUConv4 = nn.ReLU()
-        self.maxPool1d4 = nn.MaxPool1d(2, stride=2)
         self.dropout1 = nn.Dropout(dropout)
         self.flatten1 = nn.Flatten()
 
