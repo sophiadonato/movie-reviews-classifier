@@ -160,34 +160,26 @@ dataSet_clean['star_rating'] = dataSet_clean['star_rating'].astype(int)
 # 4. Lemmatization to reduce words to their base form
 nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
-dataSet['reviewText'] = dataSet['reviewText'].apply(
+dataSet_clean['reviewText'] = dataSet_clean['reviewText'].apply(
     lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
 )
 
 # 5. Convert to lowercase
-dataSet['reviewText'] = dataSet['reviewText'].str.lower()
+dataSet_clean['reviewText'] = dataSet_clean['reviewText'].str.lower()
 
 # 6. Remove extra spaces
-dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
+dataSet_clean['reviewText'] = dataSet_clean['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
 
 # 7. Remove empty reviews
-dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
+dataSet_clean = dataSet_clean[dataSet_clean['reviewText'].str.strip() != '']
 
 print("Dataset preprocessed")
-
-# Preprocessing ideas 2 and 3 comes from the following link:
-# https://medium.com/@felixmutai/tokenization-in-sentiment-analysis-cd386a08fab
-
-# Dataset conversion to lists in order to be used by the tokenizer 
-# Initially, datasets are in pandas DataFrame format and need to be converted to lists for tokenization
-reviews = dataSet['reviewText'].tolist()
-labels = dataSet['star_rating'].tolist()
 
 # TOKENIZATION 
 
 # Convert the reviews and labels to numpy arrays for easier manipulation
-X = dataSet["reviewText"].to_numpy()
-y = dataSet["star_rating"].to_numpy()
+X = dataSet_clean["reviewText"].to_numpy()
+y = dataSet_clean["star_rating"].to_numpy()
 
 # Initialize the tokenizer and fit it on the reviews
 tokenizer = Tokenizer(num_words=num_words, oov_token="<UNK>")  # <UNK> is the out-of-vocabulary token
@@ -411,7 +403,7 @@ class GPTSentimentAnalysisModel(nn.Module):
 # Loss function
 # The classification_loss function computes the cross-entropy loss for the model's predictions
 def classification_loss(model, x, targets):
-    logits = model(x)  # (B, 2)
+    logits = model(x)  # (B, 6)
     loss = F.cross_entropy(logits, targets)
     return loss
 
