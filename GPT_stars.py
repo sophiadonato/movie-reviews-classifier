@@ -61,7 +61,7 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "sentiment-analysis-gpt-star-model"
+model_name = "sentiment-analysis-gpt-star-final-train"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok=True)
 checkpoint = f"{directory}/{model_name}.pt"
