@@ -116,7 +116,7 @@ X_tensor = torch.tensor(X_padded, dtype=torch.long)
 y_tensor = torch.tensor(y, dtype=torch.long)
 
 dataset = torchdata.TensorDataset(X_tensor, y_tensor)
-test_set = torchdata.Subset(dataset, range(10000))  # Utiliser seulement 10 000 exemples
+test_set = torchdata.Subset(dataset, range(1000000))  # Utiliser seulement 10 000 exemples
 testloader = torchdata.DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
 #Model classes copied from GPT_stars.py
