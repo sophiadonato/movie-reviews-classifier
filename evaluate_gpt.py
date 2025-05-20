@@ -41,7 +41,7 @@ max_seq_len = 128
 data = pd.read_csv("./movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv")
 data = data.dropna(subset=["reviewText"])
 
-sentiment_mapping = {'POSITIVE' : 1, 'NEGATIVE' : 0}
+sentiment_mapping = {'POSITIVE' : 0, 'NEGATIVE' : 1}
 data["scoreSentiment"] = data["scoreSentiment"].map(sentiment_mapping).to_numpy()
 
 nltk.download('wordnet', quiet=True)
