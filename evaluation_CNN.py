@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np 
+import numpy as np
 import re
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -42,8 +42,8 @@ output_linear2 = 256
 output_linear3 = 128
 output_linear4 = 64
 
-number_of_conv_layers = 3
-number_of_linear_layers = 3
+number_of_conv_layers = 4
+number_of_linear_layers = 4
 
 eval_every = 1
 save_every = 10
@@ -111,7 +111,7 @@ class CNN(nn.Sequential):
         self.reLULinear2 = nn.ReLU()
         self.linear3 = nn.Linear(output_linear2, output_linear3)
         self.reLULinear3 = nn.ReLU()
-        self.linear4 = nn.Linear(output_Features3, output_Features4)
+        self.linear4 = nn.Linear(output_linear3, output_linear4)
         self.reLULinear4 = nn.ReLU()
         self.linear5 = nn.Linear(output_linear4, output_features)
         self.dropout = nn.Dropout(dropout)
@@ -122,16 +122,12 @@ class CNN(nn.Sequential):
         x = x.view(x.shape[0], 15, 100)
         x = self.conv1d1(x)
         x = self.reLUConv1(x)
-        x = self.maxPool1d1(x)
         x = self.conv1d2(x)
         x = self.reLUConv2(x)
-        x = self.maxPool1d2(x)
         x = self.conv1d3(x)
         x = self.reLUConv3(x)
-        x = self.maxPool1d3(x)
         x = self.conv1d4(x)
         x = self.reLUConv4(x)
-        x = self.maxPool1d4(x)
         x = self.dropout1(x)
         x = self.flatten1(x)
 
@@ -156,13 +152,12 @@ net.eval()
 all_preds, all_labels = [], []
 with torch.no_grad():
     for x,y in testloader:
-        print("iterating")
         x, y = x.to(device), y.to(device)
         logits = net(x)
         probs = torch.sigmoid(logits)
         pred_class = (probs>0.5).int().cpu().numpy()
-        all_preds.extend(pred_class)
-        all_labels.extend(y.int().cpu().numpy())
+        all_preds.extend(pred_class.tolist())
+        all_labels.extend(y.int().squeeze().cpu().numpy().tolist())
 
 # Confusion matrix
 wandb.init(project="evaluation-review-classifier", name="evaluation-v4-longertext")
