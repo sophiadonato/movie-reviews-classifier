@@ -271,7 +271,7 @@ wandb.log({
         probs=None,
         y_true=all_labels,
         preds=all_preds,
-        class_names=["POSITIVE", "NEGATIVE"]
+        class_names=["NEGATIVE", "POSITIVE"]
     )
 })
 
