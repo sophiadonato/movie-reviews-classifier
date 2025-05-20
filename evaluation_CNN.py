@@ -51,7 +51,7 @@ dataset_part = 1
 dropout = 0.3
 
 for i in range(number_of_conv_layers):
-    input_features = (input_features - kernel_size + 1)
+    input_features = (input_features - kernel_size + 1) // 2
 
 
 #Data extraction
@@ -163,13 +163,13 @@ with torch.no_grad():
         all_labels.extend(y.int().cpu().numpy())
 
 # Confusion matrix
-wandb.init(project="evaluation-review-classifier", name="evaluation-v4-longertext")
+wandb.init(project="evaluation-review-CNN")
 wandb.log({
     "confusion_matrix": wandb.plot.confusion_matrix(
         probs=None,
         y_true=all_labels,
         preds=all_preds,
-        class_names=["POSITIVE", "NEGATIVE"]
+        class_names=["NEGATIVE", "POSITIVE"]
     )
 })
 
