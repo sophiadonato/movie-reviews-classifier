@@ -189,8 +189,7 @@ new_reviews_tensor = torch.tensor(new_reviews_padded, dtype=torch.long).to(devic
 
 with torch.no_grad():
     preds = net(new_reviews_tensor)
-    pred_labels = torch.sigmoid(preds) > 0.5
-    pred_labels = pred_labels.cpu().numpy()
+    pred_labels = torch.argmax(preds, dim=1).cpu().numpy()
 
 table = wandb.Table(columns = ["Reviews", "Prediction"])
 for new_review, pred_label in zip(new_reviews, pred_labels):
