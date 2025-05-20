@@ -167,6 +167,13 @@ with torch.no_grad():
 print("Unique preds:", set(all_preds))      # Should be {0, 1}
 print("Unique labels:", set(all_labels))    # Should be {0, 1}
 
+number_correct = 0
+for [x, y] in [all_preds, all_labels]:
+    if x == y:
+        number_correct += 1
+
+print(f"The accuracy is {number_correct/len(all_preds)}")
+
 # Confusion matrix
 wandb.log({
     "confusion_matrix": wandb.plot.confusion_matrix(
