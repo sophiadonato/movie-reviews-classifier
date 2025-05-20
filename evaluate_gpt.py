@@ -45,7 +45,7 @@ data = data.dropna(subset=["reviewText"])
 print("Starting data preprocessing...")
 
 # 1. Replace POSITIVE and NEGATIVE with 0 and 1 (déjà fait, mais à vérifier)
-sentiment_mapping = {'POSITIVE': 0, 'NEGATIVE': 1}  # Attention au mapping différent dans gpt_final_v
+sentiment_mapping = {'POSITIVE': 1, 'NEGATIVE': 0}  # Attention au mapping différent dans gpt_final_v
 data["scoreSentiment"] = data["scoreSentiment"].map(sentiment_mapping).to_numpy()
 
 # 2. Removes punctuation and special characters
