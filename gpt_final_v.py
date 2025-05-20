@@ -117,6 +117,9 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex =
 # )
 
 # 4. Lemmatization to reduce words to their base form
+dataSet['reviewText'] = dataSet['reviewText'].astype(str)
+dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
+dataSet = dataSet[~dataSet['reviewText'].str.match(r'^[\d\.]+$')]
 nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
 dataSet['reviewText'] = dataSet['reviewText'].apply(
