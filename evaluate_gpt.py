@@ -41,26 +41,39 @@ max_seq_len = 128
 data = pd.read_csv("./movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv")
 data = data.dropna(subset=["reviewText"])
 
-sentiment_mapping = {'POSITIVE' : 0, 'NEGATIVE' : 1}
+# DATASET PREPROCESSING
+print("Starting data preprocessing...")
+
+# 1. Replace POSITIVE and NEGATIVE with 0 and 1 (déjà fait, mais à vérifier)
+sentiment_mapping = {'POSITIVE': 0, 'NEGATIVE': 1}  # Attention au mapping différent dans gpt_final_v
 data["scoreSentiment"] = data["scoreSentiment"].map(sentiment_mapping).to_numpy()
 
+# 2. Removes punctuation and special characters
+data['reviewText'] = data['reviewText'].str.replace('[^\w\s]', '', regex=True)
+
+# 3. Lemmatization to reduce words to their base form
 nltk.download('wordnet', quiet=True)
 lemmatizer = WordNetLemmatizer()
+data['reviewText'] = data['reviewText'].apply(
+    lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
+)
 
-#Data preprocessing
-def clean_text(text):
-    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
-    text = " ".join([lemmatizer.lemmatize(word) for word in text.split()])
-    text = re.sub(r"\s+", " ", text)
-    return text.strip().lower()
+# 4. Convert to lowercase
+data['reviewText'] = data['reviewText'].str.lower()
 
-data["reviewText"] = data["reviewText"].apply(clean_text)
+# 5. Remove extra spaces
+data['reviewText'] = data['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
+
+# 6. Remove empty reviews
+data = data[data['reviewText'].str.strip() != '']
+
+print("Dataset preprocessing complete")
 
 X = data["reviewText"].to_numpy()
 y = data["scoreSentiment"].to_numpy()
 
 #Tokenization and padding
-tokenizer = Tokenizer(num_words=num_words)
+tokenizer = Tokenizer(num_words=num_words, oov_token="<UNK>")
 tokenizer.fit_on_texts(X)
 X_sequences = tokenizer.texts_to_sequences(X)
 
@@ -68,7 +81,7 @@ X_padded = pad_sequences(X_sequences, padding='post', maxlen=max_seq_len)
 
 #Datasets ready
 X_tensor = torch.tensor(X_padded, dtype=torch.long)
-y_tensor = torch.tensor(y, dtype=torch.float32)
+y_tensor = torch.tensor(y, dtype=torch.long)
 
 dataset = torchdata.TensorDataset(X_tensor, y_tensor)
 test_set = torchdata.Subset(dataset, range(100000))
@@ -275,8 +288,22 @@ new_reviews = ["This movie is amazing !", "I didn't like ThunderBolts, it was re
             "I wanted to like this movie. The premise was intriguing, and the opening scenes promised something bold. But somewhere along the way, it lost momentum. Characters make baffling choices, subplots go nowhere, and the pacing drags. There are still interesting elements—a strong performance here, a striking shot there—but they feel isolated, like pieces of a better film that never came together. It’s not terrible, just deeply uneven. By the time the credits roll, it’s hard to feel anything but disappointment. A missed opportunity.",
             "This film defies easy categorization. It’s neither a straightforward drama nor a full-fledged comedy, but something that hovers in between. Some will find that exciting, others will find it frustrating. There are long, quiet scenes that invite reflection—and just as many where nothing seems to happen. It’s well-shot and competently acted, but hard to describe or summarize. Does that make it profound or just pretentious? It probably depends on your mood. One thing’s for sure: it won’t please everyone. And maybe that’s the point.",
             "A joyful rollercoaster of a film that embraces its absurdity and runs with it. Sure, it’s ridiculous and over-the-top, but that’s exactly the charm. The cast is clearly having a blast, the script is snappy, and the energy never lets up. It knows what it is and doesn’t try to be more than that. The result is pure fun—flawed, yes, but undeniably entertaining. If you’re in the mood for something light and fast-paced, this might hit the spot. Just don’t expect depth or subtlety, and you’ll have a great time."]
-new_reviews_cleaned = [clean_text(review) for review in new_reviews]
-new_reviews_seq = tokenizer.texts_to_sequences(new_reviews_cleaned)
+new_reviews_processed = []
+for review in new_reviews:
+    # 1. Suppression des ponctuations et caractères spéciaux
+    processed = re.sub(r'[^\w\s]', '', review)
+    
+    # 2. Lemmatisation 
+    processed = ' '.join([lemmatizer.lemmatize(word) for word in processed.split()])
+    
+    # 3. Conversion en minuscules
+    processed = processed.lower()
+    
+    # 4. Suppression des espaces en trop
+    processed = re.sub(r'\s+', ' ', processed).strip()
+    
+    new_reviews_processed.append(processed)
+new_reviews_seq = tokenizer.texts_to_sequences(new_reviews_processed)
 new_reviews_padded = pad_sequences(new_reviews_seq, padding='post', maxlen = max_seq_len)
 new_reviews_tensor = torch.tensor(new_reviews_padded, dtype=torch.long).to(device)
 
