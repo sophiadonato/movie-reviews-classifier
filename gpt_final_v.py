@@ -37,13 +37,13 @@ print("GPU detection done")
 
 # ====================================== HYPERPARAMETERS ======================================
 
-batch_size = 32
-block_size = 512
-n_embedding = 512
+batch_size = 256
+block_size = 128
+n_embedding = 256
 # Having a minimum large nb of blocks and heads is important to capture
 # complex patterns in the data
-n_blocks = 12
-n_head = 8
+n_blocks = 4
+n_head = 4
 dropout = 0.2
 max_iters = 50000
 learning_rate = 1e-4
