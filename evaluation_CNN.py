@@ -55,35 +55,86 @@ for i in range(number_of_conv_layers):
 
 
 #Data extraction
-data = pd.read_csv("rotten_tomatoes_movie_reviews.csv")
-data = data.dropna(subset=["reviewText"])
+file_path = "rotten_tomatoes_movie_reviews.csv"
+dataSet = pd.read_csv(file_path)
 
-sentiment_mapping = {'POSITIVE' : 1, 'NEGATIVE' : 0}
-data["scoreSentiment"] = data["scoreSentiment"].map(sentiment_mapping).to_numpy()
+print("Dataset loaded")
 
-#Data preprocessing
-def clean_text(text):
-    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
-    text = re.sub(r"\s+", " ", text)
-    return text.strip().lower()
+# Decreasing the size of the dataset to speed up the training process
+if dataset_part != 1:
+    dataSet = dataSet.sample(frac=dataset_part, random_state=42)
 
-data["reviewText"] = data["reviewText"].apply(clean_text)
+print("Dataset size decreased")
 
-X = data["reviewText"].to_numpy()
-y = data["scoreSentiment"].to_numpy()
+# DATASET PREPROCESSING
 
-#Tokenization and padding
-tokenizer = Tokenizer(num_words=vocab_n)
+# 1. Replace POSITIVE and NEGATIVE with 1 and 0
+dataSet['scoreSentiment'] = dataSet['scoreSentiment'].map({'POSITIVE': 1, 'NEGATIVE': 0})
+# 2. Removes punctuation and special characters
+dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex=True)
+
+# 3. Removes stop words which do not add value to the analysis
+# Stopwords download
+# nltk.download("stopwords")
+# stop_words = set(stopwords.words('english'))
+
+# dataSet['reviewText'] = dataSet['reviewText'].apply(
+#     lambda x: ' '.join([word for word in x.split() if word not in stop_words])
+# )
+# not or never being stop words and having a strong impact on the sentiment,
+# stop words should not been removed
+
+# 4. Lemmatization to reduce words to their base form
+# nltk.download('wordnet')
+# lemmatizer = WordNetLemmatizer()
+# dataSet['reviewText'] = dataSet['reviewText'].apply(
+#     lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
+# )
+
+# 5. Convert to lowercase
+dataSet['reviewText'] = dataSet['reviewText'].str.lower()
+
+# 6. Remove extra spaces
+dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex=True).str.strip()
+
+# 7. Remove empty reviews
+dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
+
+print("Dataset preprocessed")
+
+# Preprocessing ideas 2 and 3 comes from the following link:
+# https://medium.com/@felixmutai/tokenization-in-sentiment-analysis-cd386a08fab
+
+# Dataset conversion to lists in order to be used by the tokenizer 
+# Initially, datasets are in pandas DataFrame format and need to be converted to lists for tokenization
+reviews = dataSet['reviewText'].tolist()
+labels = dataSet['scoreSentiment'].tolist()
+
+# TOKENIZATION 
+
+# Convert the reviews and labels to numpy arrays for easier manipulation
+X = dataSet["reviewText"].fillna("").astype(str).to_numpy()
+y = dataSet["scoreSentiment"].to_numpy()
+print(X[:10], "and y = ", y[:10])
+print(X.dtype)
+
+# Initialize the tokenizer and fit it on the reviews
+tokenizer = Tokenizer(num_words=vocab_n, oov_token="<UNK>")  # <UNK> is the out-of-vocabulary token
 tokenizer.fit_on_texts(X)
+
+# Convert the reviews to sequences of integers
 X_sequences = tokenizer.texts_to_sequences(X)
 
+# Define the padding token ID
 X_padded = pad_sequences(X_sequences, padding='post', maxlen=sequence_length)
 
-#Datasets ready
-X_tensor = torch.tensor(X_padded, dtype=torch.long)
-y_tensor = torch.tensor(y, dtype=torch.float32)
+# Convert the padded sequences to PyTorch tensors
+encoded_reviews = torch.tensor(X_padded, dtype=torch.long).to(device)
+encoded_labels = torch.tensor(y, dtype=torch.long).to(device)
 
-dataset = torchdata.TensorDataset(X_tensor, y_tensor)
+print("Tokenization and padding done")
+
+dataset = torchdata.TensorDataset(encoded_reviews, encoded_labels)
 train_set, test_set = torchdata.random_split(dataset, [int(0*len(dataset)), len(dataset)-int(0*len(dataset))])
 #trainloader = torchdata.DataLoader(train_set, batch_size=batch_size, shuffle=True)
 testloader = torchdata.DataLoader(test_set, batch_size=batch_size, shuffle=False)
@@ -168,7 +219,7 @@ print("Unique preds:", set(all_preds))      # Should be {0, 1}
 print("Unique labels:", set(all_labels))    # Should be {0, 1}
 
 number_correct = 0
-for [x, y] in [all_preds, all_labels]:
+for x, y in zip(all_preds, all_labels):
     if x == y:
         number_correct += 1
 
