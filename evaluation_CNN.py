@@ -154,10 +154,9 @@ with torch.no_grad():
     for x,y in testloader:
         x, y = x.to(device), y.to(device)
         logits = net(x)
-        probs = torch.sigmoid(logits)
-        pred_class = (probs>0.5).int().cpu().numpy()
-        all_preds.extend(pred_class.tolist())
-        all_labels.extend(y.int().squeeze().cpu().numpy().tolist())
+        pred_class = torch.argmax(logits, dim=1)
+        all_preds.extend(pred_class)
+        all_labels.extend(y.int().cpu().numpy())
 
 # Confusion matrix
 wandb.init(project="evaluation-review-classifier", name="evaluation-v4-longertext")
