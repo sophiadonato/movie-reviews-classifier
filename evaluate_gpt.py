@@ -223,13 +223,23 @@ class GPTSentimentAnalysisModel(nn.Module):
         logits = self.classifier(h)  # (B, 2)
         return logits
 
-model_name = "sentiment-analysis-gpt"
+# Change these lines in evaluate_gpt.py
+model_name = "sentiment-analysis-gpt-best_model"  # Match the model name in gpt_2_checkpoint.py
 directory = "./checkpoints"
-checkpoint_path = f"{directory}/{model_name}.pt"
+best_checkpoint_path = f"{directory}/{model_name}_best.pt"  # Note the _best suffix
+
+# Load the checkpoint which contains a dictionary
+checkpoint_data = torch.load(best_checkpoint_path)
 net = GPTSentimentAnalysisModel().to(device)
-net.load_state_dict(torch.load(checkpoint_path))
+
+# Extract model weights from the checkpoint data
+net.load_state_dict(checkpoint_data['model'])
 net = net.to(device)
 net.eval()
+
+print(f"Loaded checkpoint from iteration {checkpoint_data['iteration']}")
+print(f"Best validation loss: {checkpoint_data['best_val_loss']}")
+print(f"Best validation accuracy: {checkpoint_data['best_validation_accuracy']}")
 
 all_preds, all_labels = [], []
 with torch.no_grad():
