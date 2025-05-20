@@ -153,6 +153,8 @@ net.load_state_dict(torch.load(checkpoint_path, map_location=device))
 net = net.to(device)
 net.eval()
 
+wandb.init(project="evaluation-review-CNN")
+
 all_preds, all_labels = [], []
 with torch.no_grad():
     for x,y in testloader:
@@ -162,8 +164,10 @@ with torch.no_grad():
         all_preds.extend(pred_class.int().cpu().numpy())
         all_labels.extend(y.int().cpu().numpy())
 
+print("Unique preds:", set(all_preds))      # Should be {0, 1}
+print("Unique labels:", set(all_labels))    # Should be {0, 1}
+
 # Confusion matrix
-wandb.init(project="evaluation-review-CNN")
 wandb.log({
     "confusion_matrix": wandb.plot.confusion_matrix(
         probs=None,
