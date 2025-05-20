@@ -155,7 +155,7 @@ with torch.no_grad():
         x, y = x.to(device), y.to(device)
         logits = net(x)
         pred_class = torch.argmax(logits, dim=1)
-        all_preds.extend(pred_class)
+        all_preds.extend(pred_class.int().cpu().numpy())
         all_labels.extend(y.int().cpu().numpy())
 
 # Confusion matrix
