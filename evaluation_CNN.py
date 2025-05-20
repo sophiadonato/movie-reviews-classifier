@@ -249,6 +249,8 @@ new_reviews = ["This movie is amazing !", "I didn't like ThunderBolts, it was re
             "This film defies easy categorization. It’s neither a straightforward drama nor a full-fledged comedy, but something that hovers in between. Some will find that exciting, others will find it frustrating. There are long, quiet scenes that invite reflection—and just as many where nothing seems to happen. It’s well-shot and competently acted, but hard to describe or summarize. Does that make it profound or just pretentious? It probably depends on your mood. One thing’s for sure: it won’t please everyone. And maybe that’s the point.",
             "A joyful rollercoaster of a film that embraces its absurdity and runs with it. Sure, it’s ridiculous and over-the-top, but that’s exactly the charm. The cast is clearly having a blast, the script is snappy, and the energy never lets up. It knows what it is and doesn’t try to be more than that. The result is pure fun—flawed, yes, but undeniably entertaining. If you’re in the mood for something light and fast-paced, this might hit the spot. Just don’t expect depth or subtlety, and you’ll have a great time."]
 
+new_reviews = pd.Series(new_reviews)
+
 # 2. Removes punctuation and special characters
 new_reviews = new_reviews.str.replace('[^\w\s]', '', regex=True)
 
