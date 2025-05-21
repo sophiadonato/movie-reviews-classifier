@@ -429,6 +429,9 @@ else:
 
 print("Parameters:", sum(p.numel() for p in lm.parameters())/1e6, 'M parameters')
 
+patience = 20
+patience_counter = 0
+
 for i in range(start_iter, max_iters + 1):
     if i % eval_every == 0:
         # Evaluation on the test set
@@ -440,6 +443,12 @@ for i in range(start_iter, max_iters + 1):
             best_val_loss = results['validation_loss']
             print(f"New best model with alidation loss: {best_val_loss:.4f}")
             save_best = True
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f"Early stopping at iteration {i} due to no improvement in validation loss.")
+                break
             
         if results['validation_accuracy'] > best_validation_accuracy:
             best_validation_accuracy = results['validation_accuracy']
