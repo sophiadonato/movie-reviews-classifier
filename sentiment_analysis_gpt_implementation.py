@@ -149,20 +149,6 @@ encoded_labels = torch.tensor(y, dtype = torch.long).to(device)
 
 print("Tokenization and padding done")
 
-# Padding function
-def pad_sequences(sequences, max_length, pad_token_id):
-    padded_sequences = []
-    for seq in sequences:
-        if len(seq) < max_length:
-            # Padding if the sequence is too short
-            # dtype = torch.long is used to ensure that the padding token is of the same type as the input sequences
-            seq = torch.cat([seq, torch.full((max_length - len(seq),), pad_token_id, device = device, dtype = torch.long)])
-        else:
-            # Truncating if the sequence is too long
-            seq = seq[:max_length]
-        padded_sequences.append(seq)
-    return torch.stack(padded_sequences)
-
 # TRAIN AND TEST SETS SPLIT 
 
 n = int(0.9 * len(encoded_reviews))
