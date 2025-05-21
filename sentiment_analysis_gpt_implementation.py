@@ -1,29 +1,17 @@
 # ====================================== IMPORTS ======================================
 
-# Library torch imported to build and train a GPT model for sentiment analysis
-# torch imports the PyTorch library for tensor operations and GPU acceleration
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-# Library wandb imported to log and visualize training metrics
 import wandb
-# Library pandas imported to handle data manipulation and analysis
 import pandas as pd
-# Library nltk imported for natural language processing tasks
-
 import nltk
 from nltk.stem import WordNetLemmatizer
-# from nltk.corpus import stopwords
-# Library os imported to handle file and directory operations
 import os
-# For the tokenization
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
 from torch.optim.lr_scheduler import CosineAnnealingLR
-
-# import for star prediction
-# import re
 
 print("Imports done")
 
@@ -57,7 +45,7 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "sentiment-analysis-gpt-final_train"
+model_name = "sentiment-analysis-gpt-implementation"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok = True)
 checkpoint = f"{directory}/{model_name}.pt"
@@ -89,7 +77,7 @@ print("WandB done")
 # ====================================== DATA ======================================
 
 # Dataset loading
-file_path = "movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv"
+file_path = "rotten_tomatoes_movie_reviews.csv"
 dataSet = pd.read_csv(file_path)
 
 print("Dataset loaded")
@@ -117,10 +105,15 @@ dataSet['reviewText'] = dataSet['reviewText'].str.replace('[^\w\s]', '', regex =
 # )
 
 # 4. Lemmatization to reduce words to their base form
+# 4.1. Convert to string
 dataSet['reviewText'] = dataSet['reviewText'].astype(str)
+# 4.2. Remove empty reviews
 dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
+# 4.3. Remove reviews that are only numbers
 dataSet = dataSet[~dataSet['reviewText'].str.match(r'^[\d\.]+$')]
+# 4.4. Download WordNet
 nltk.download('wordnet')
+# 4.5. Lemmatization
 lemmatizer = WordNetLemmatizer()
 dataSet['reviewText'] = dataSet['reviewText'].apply(
     lambda x: ' '.join([lemmatizer.lemmatize(word) for word in x.split()])
@@ -132,51 +125,7 @@ dataSet['reviewText'] = dataSet['reviewText'].str.lower()
 # 6. Remove extra spaces
 dataSet['reviewText'] = dataSet['reviewText'].str.replace(r'\s+', ' ', regex = True).str.strip()
 
-# 7. Remove empty reviews
-dataSet = dataSet[dataSet['reviewText'].str.strip() != '']
-
 print("Dataset preprocessed")
-
-# DATA FOR STAR PREDICTION
-
-# This method is used to normalize the scores from various formats to a standard 0-5 scale.
-# def normalize_score(score):
-#     if pd.isna(score) or score == '':
-#         return None
-    
-#     # Conversion into format X/Y
-#     fraction_match = re.match(r'(\d+(\.\d+)?)/(\d+(\.\d+)?)', str(score))
-#     if fraction_match:
-#         numerator = float(fraction_match.group(1))
-#         denominator = float(fraction_match.group(3))
-#         if denominator == 0:
-#             return None
-#         normalized = (numerator / denominator) * 5
-#         return round(normalized)
-    
-#     # Convert score into format X.Y
-#     try:
-#         numeric_score = float(score)
-#         # Determine the scale based on the value
-#         if numeric_score <= 5:  # Supposed to be on a 5-point scale
-#             return round(numeric_score)
-#         elif numeric_score <= 10:  # Supposed to be on a 10-point scale
-#             return round((numeric_score / 10) * 5)
-#         else:  # Unknown scale, return None
-#             return None
-#     except ValueError:
-#         # Letter, return None
-#         return None
-    
-# # 2. Retrieve the originalScore and normalize it
-# dataSet['star_rating'] = dataSet['originalScore'].apply(normalize_score)
-
-# # Filter non valid score
-# dataSet_clean = dataSet.dropna(subset=['star_rating'])
-
-# # Convert score to int
-# dataSet_clean['star_rating'] = dataSet_clean['star_rating'].astype(int)
-
 
 # TOKENIZATION 
 
@@ -241,9 +190,10 @@ print("Train and test sets split")
 # Generate mini-batch of data for training
 def get_batch(data, labels):
     # Randomly select batch_size sequences from the dataset
-    # In example of teacher, len(data) - block_size is used because 
-    # the model needs the next token to check if the prediction is
-    # correct or not. In our case, we do not need the next token.
+    # In implementation of thee teacher, len(data) - block_size is 
+    # used because the model needs the next token to check if the 
+    # prediction is correct or not. In our case, we do not need the 
+    # next token.
     ix = torch.randint(len(data), (batch_size,))
     # Select the corresponding labels for the selected sequences
     x = torch.stack([data[i] for i in ix])
@@ -296,7 +246,7 @@ class Head(nn.Module):
         
         # Attention scores based on relative position
         # Combine queries with relative positional embeddings
-        # The einsum operation performs an intelligent tensor contraction
+        # einsum is a special operation on tensors
         relative_position_score = torch.einsum('bth,ijh->btij', q, relative_position_embeddings)  # [B, T, T]
         relative_position_score = relative_position_score.diagonal(dim1 = -2, dim2 = -1).transpose(-2, -1)  # [B, T, T]
         
@@ -416,13 +366,6 @@ class GPTSentimentAnalysisModel(nn.Module):
         h = h.mean(dim = 1)
         logits = self.classifier(h)  # (B, 2)
         return logits
-
-# Loss function
-# The classification_loss function computes the cross-entropy loss for the model's predictions
-def classification_loss(model, x, targets):
-    logits = model(x)  # (B, 2)
-    loss = F.cross_entropy(logits, targets)
-    return loss
 
 @torch.no_grad()
 def evaluate(model, train_loader, validation_loader, criterion):
@@ -549,8 +492,9 @@ for i in range(start_iter, max_iters + 1):
     # Training
     optimizer.zero_grad()
     x, y = get_batch(train_reviews, train_labels)
-    loss = classification_loss(lm, x, y)
-    loss.backward()
+    logits = lm(x)  # Forward pass
+    loss = criterion(logits, y)  # Calcul de perte 
+    loss.backward()  # Rétropropagation des gradients
     optimizer.step()
     scheduler.step()
 

@@ -1,27 +1,13 @@
-# Sentiment Analysis using GPT Model with 
-# - Bidirectional attention
-# - relative positional encoding
-# - Pre-normalization
-
 # ====================================== IMPORTS ======================================
 
-# Library torch imported to build and train a GPT model for sentiment analysis
-# torch imports the PyTorch library for tensor operations and GPU acceleration
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-# Library wandb imported to log and visualize training metrics
 import wandb
-# Library pandas imported to handle data manipulation and analysis
 import pandas as pd
-# Library tokenizers imported to handle tokenization of text data
-# from tokenizers import ByteLevelBPETokenizer
-# Library nltk imported for natural language processing tasks
 from nltk.corpus import stopwords
 import nltk
-# Library os imported to handle file and directory operations
 import os
-# For the tokenization
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import DataLoader, TensorDataset
@@ -61,7 +47,7 @@ print("Hyperparameters done")
 
 # ====================================== CHECKPOINTS ======================================
 
-model_name = "sentiment-analysis-gpt-star-final-train"
+model_name = "sentiment-analysis-star-gpt-implementation"
 directory = "./checkpoints"
 os.makedirs(directory, exist_ok=True)
 checkpoint = f"{directory}/{model_name}.pt"
@@ -93,7 +79,7 @@ print("WandB done")
 # ====================================== DATA ======================================
 
 # Dataset loading
-file_path = "movie_reviews_dataset/rotten_tomatoes_movie_reviews.csv"
+file_path = "rotten_tomatoes_movie_reviews.csv"
 dataSet = pd.read_csv(file_path)
 
 print("Dataset loaded")
@@ -296,7 +282,7 @@ class Head(nn.Module):
         
         # Attention scores based on relative position
         # Combine queries with relative positional embeddings
-        # The einsum operation performs an intelligent tensor contraction
+        # einsum is a special operation on tensors
         relative_position_score = torch.einsum('bth,ijh->btij', q, relative_position_embeddings)  # [B, T, T]
         relative_position_score = relative_position_score.diagonal(dim1=-2, dim2=-1).transpose(-2, -1)  # [B, T, T]
         
@@ -407,13 +393,6 @@ class GPTSentimentAnalysisModel(nn.Module):
         h = h.mean(dim=1)
         logits = self.classifier(h)  # (B, 2)
         return logits
-
-# Loss function
-# The classification_loss function computes the cross-entropy loss for the model's predictions
-def classification_loss(model, x, targets):
-    logits = model(x)  # (B, 6)
-    loss = F.cross_entropy(logits, targets)
-    return loss
 
 @torch.no_grad()
 def evaluate(model, train_loader, validation_loader, criterion):
@@ -553,8 +532,9 @@ for i in range(start_iter, max_iters + 1):
     # Training
     optimizer.zero_grad()
     x, y = get_batch(train_reviews, train_labels)
-    loss = classification_loss(lm, x, y)
-    loss.backward()
+    logits = lm(x)  # Forward pass
+    loss = criterion(logits, y)  # Calcul de perte 
+    loss.backward()  # Rétropropagation des gradients
     optimizer.step()
     scheduler.step()
 
