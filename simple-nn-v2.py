@@ -45,7 +45,7 @@ wandb.init(
 )
 
 #Data extraction
-data = pd.read_csv("../rotten_tomatoes_movie_reviews.csv")
+data = pd.read_csv("rotten_tomatoes_movie_reviews.csv")
 data = data.dropna(subset=["reviewText"])
 
 sentiment_mapping = {'POSITIVE' : 0, 'NEGATIVE' : 1}

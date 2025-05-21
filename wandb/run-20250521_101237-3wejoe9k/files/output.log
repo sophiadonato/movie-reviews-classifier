@@ -1,0 +1,25 @@
+Parameters: 201.073 K parameters
+0
+Step 0 : Train accuracy 0.3741, Validation accuracy 0.3736
+1
+2
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 154, in <module>
+    loss.backward()
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\_tensor.py", line 648, in backward
+    torch.autograd.backward(
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\autograd\__init__.py", line 353, in backward
+    _engine_run_backward(
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\autograd\graph.py", line 824, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "c:\Users\sdona\Documents\M1Q2_DeepLearning\projet\projet_tomate_pourrie\simple-nn-v1.py", line 154, in <module>
+    loss.backward()
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\_tensor.py", line 648, in backward
+    torch.autograd.backward(
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\autograd\__init__.py", line 353, in backward
+    _engine_run_backward(
+  File "C:\Users\sdona\miniconda3\envs\projet_DL\lib\site-packages\torch\autograd\graph.py", line 824, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt
