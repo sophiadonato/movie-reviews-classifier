@@ -1,93 +1,90 @@
-# projet_tomate_pourrie
+# movie-reviews-classifier
 
+Course project for **INFO8010 – Deep Learning** (University of Liège).
 
+**Authors:** Sophia Donato, Jules Jacquet, Lucas Vilour
 
-## Getting started
+This project compares three deep learning architectures for classifying English movie reviews from [Rotten Tomatoes](https://www.kaggle.com/datasets/andrezaza/clapper-massive-rotten-tomatoes-movies-and-reviews) as **positive** or **negative**. The three models follow the historical evolution of the field: a simple MLP, a CNN, and a Transformer with self-attention. The Transformer is also extended to predict a **star rating (0–5)**.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+The full write-up is in the project report (`DL_report.pdf`).
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Add your files
+## Repository structure
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+Each architecture lives on **its own branch**:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.uliege.be/apprentissageprofond/projet_tomate_pourrie.git
-git branch -M main
-git push -uf origin main
-```
+| Branch | Architecture | Description |
+|--------|--------------|-------------|
+| `simple-nn` | Fully connected network | Embedding (16 features) + 2 × (Linear + ReLU) + Dropout |
+| `cnn` | Convolutional network (encoder–decoder) | Embedding + 1D convolutions / ReLU / max pooling as encoder, fully connected layers as decoder |
+| `gpt` | GPT-style Transformer (bidirectional) | Pre-layer norm, multi-head self-attention, relative positional embeddings, mean pooling + linear head |
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://gitlab.uliege.be/apprentissageprofond/projet_tomate_pourrie/-/settings/integrations)
+## Dataset
 
-## Collaborate with your team
+- **Source:** Rotten Tomatoes movie reviews (Kaggle), about 1.3 million reviews.
+- **Split:** 90% training / 10% validation; the full test set is used for the confusion matrices.
+- **Preprocessing (shared across models):** removal of special characters and extra whitespace, lowercasing, word-level tokenization, padding to a common length.
+  - MLP / CNN: vocabulary limited to 10,000 words.
+  - Transformer: vocabulary limited to 20,000 tokens, plus lemmatization and removal of empty reviews. Stop-word removal was tested and discarded because it hurt results (negations like "not" and "never" are stop words).
+- No data augmentation was used, given the size of the dataset.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+---
 
-## Test and Deploy
+## Models
 
-Use the built-in continuous integration in GitLab.
+### MLP
+- Embedding layer, two fully connected blocks with ReLU, dropout.
+- Binary cross-entropy with logits (the sigmoid + BCE version was numerically unstable), Adam optimizer.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### CNN
+- Embedding layer, stacked 1D convolution + ReLU + max pooling blocks, then fully connected decoder.
+- Experiments on dataset size, dropout, depth and kernel size (3 / 4 / 6).
+- Prone to overfitting on validation loss with long training.
 
-***
+### Transformer
+- Adapted from G. Louppe's GPT implementation, modified for classification.
+- Bidirectional attention (outperformed causal attention), relative positional encoding (outperformed absolute), pre-layer normalization (post-layer norm failed to converge).
+- Learning rate scheduler comparison: StepLR, ExponentialLR, ReduceLROnPlateau, CyclicLR, CosineAnnealingLR (best: **CosineAnnealingLR**).
+- Early stopping with a patience of 20 epochs on validation loss.
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Results
 
-## Suggestions for a good README
+### Binary sentiment classification (full test set)
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+| Model | Precision | Recall | F1 | Accuracy |
+|-------|-----------|--------|----|----------|
+| MLP | 87% | 86% | 87% | 82% |
+| CNN | 84% | 92% | 88% | 82% |
+| Transformer | 80% | 92% | 85% | 79% |
 
-## Name
-Choose a self-explaining name for your project.
+All three models reach roughly 80% accuracy. The MLP performs best on this task, likely because the reviews are short (about 100 words at most), so attention and positional encoding bring little advantage. The MLP and CNN plateau around 80% validation accuracy, while the Transformer is still improving and would likely benefit from longer training. The Transformer also shows a bias toward positive predictions.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### Star rating prediction (Transformer, 6 classes)
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+- Ratings on different scales (0–5, 0–10) were normalized to 0–5 and rounded; letter grades and unknown scales were dropped.
+- Accuracy: **54.8%**, limited by the amount of usable data after filtering and by the subjectivity of ratings.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Qualitative tests
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Models were also tested on 15 new reviews (written by the us or generated with ChatGPT). See Appendices A and B of the report.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+---
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+## Future work
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- Explore the Transformer further (longer training, more compute) to improve binary classification, ideally on longer reviews.
+- Improve the star prediction model with more usable data and better handling of rating scales.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+---
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## References
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- G. Louppe, *GPT implementation* (INFO8010 course code).
+- K. L. Tan et al., *RoBERTa-GRU: A hybrid deep learning model for enhanced sentiment analysis*, Applied Sciences, 2023.
+- N. M. Ali et al., *Sentiment analysis for movies reviews dataset using deep learning models*, IJDKP, 2019.
+- K. Dashtipour et al., *Sentiment analysis of Persian movie reviews using deep learning*, Entropy, 2021.
